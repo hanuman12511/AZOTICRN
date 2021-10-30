@@ -5,6 +5,11 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {RootSiblingParent} from 'react-native-root-siblings';
 import {ModalPortal} from 'react-native-modals';
 
+import {connect} from 'react-redux';
+
+// selectors
+import {userInfoSelectors} from 'state/ducks/userInfo';
+
 // Splash Screen
 import SplashScreen from './src/screens/SplashScreen';
 
@@ -18,7 +23,7 @@ import {createRootNavigator} from './src/routes/Routes';
 import {nsSetTopLevelNavigator} from './src/routes/NavigationService';
 
 // UserPreference
-import {KEYS, storeData, getData} from './src/api/UserPreference';
+import {KEYS, storeData, getData} from 'state/utils/UserPreference';
 
 import {checkPermission} from './src/firebase_api/FirebaseAPI';
 
@@ -33,13 +38,15 @@ import {
   removeNotificationListeners,
 } from './src/firebase_api/FirebaseAPI';
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
 
+    const {userInfo} = props;
+
     this.state = {
       isLoading: true,
-      userInfo: null,
+      userInfo: Object.keys(userInfo).length > 0 ? userInfo : null,
       locationCoords: '',
     };
   }
@@ -60,10 +67,10 @@ export default class App extends Component {
       // Fetching userInfo
       const locationCoords = await getData(KEYS.LOCATION_COORDS);
 
-      const userInfo = await getData(KEYS.USER_INFO);
+      // const userInfo = await getData(KEYS.USER_INFO);
       // const isLoggedIn = userInfo ? true : false;
 
-      this.setState({userInfo, locationCoords, isLoading: false});
+      this.setState({locationCoords, isLoading: false});
     } catch (error) {
       console.log(error.message);
     }
@@ -98,3 +105,10 @@ export default class App extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  userInfo: userInfoSelectors.getUserInfo(state),
+});
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

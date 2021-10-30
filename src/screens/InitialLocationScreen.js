@@ -44,7 +44,16 @@ import APP_Banner2 from '../assets/images/APP_Banner2.jpg';
 import APP_Banner3 from '../assets/images/APP_Banner3.gif';
 import {getData, KEYS, storeData} from '../api/UserPreference';
 
-export default class InitialLocationScreen extends Component {
+import {connect} from 'react-redux';
+
+// selectors
+import {loaderSelectors} from 'state/ducks/loader';
+import {sessionSelectors} from 'state/ducks/session';
+
+// operations
+import {sessionOperations} from 'state/ducks/session';
+
+class InitialLocationScreen extends Component {
   constructor(props) {
     super(props);
 
@@ -147,7 +156,7 @@ export default class InitialLocationScreen extends Component {
         providerListener: true, // true ==> Trigger "locationProviderStatusChange" listener when the location state changes
       })
         .then(this.fetchCurrentPosition)
-        .catch((error) => {
+        .catch(error => {
           const {message} = error;
 
           if (message === 'disabled') {
@@ -163,12 +172,13 @@ export default class InitialLocationScreen extends Component {
           }
         });
 
-      DeviceEventEmitter.addListener('locationProviderStatusChange', function (
-        status,
-      ) {
-        // only trigger when "providerListener" is enabled
-        console.log('Status', status); //  status => {enabled: false, status: "disabled"} or {enabled: true, status: "enabled"}
-      });
+      DeviceEventEmitter.addListener(
+        'locationProviderStatusChange',
+        function (status) {
+          // only trigger when "providerListener" is enabled
+          console.log('Status', status); //  status => {enabled: false, status: "disabled"} or {enabled: true, status: "enabled"}
+        },
+      );
     } else if (Platform.OS === 'ios') {
       console.log('IOS');
       this.fetchCurrentPosition();
@@ -191,7 +201,7 @@ export default class InitialLocationScreen extends Component {
     );
   };
 
-  geolocationSuccessCallback = async (position) => {
+  geolocationSuccessCallback = async position => {
     try {
       // starting loader
       this.setState({isProcessing: true});
@@ -263,7 +273,7 @@ export default class InitialLocationScreen extends Component {
     }
   };
 
-  geolocationErrorCallback = (error) => {
+  geolocationErrorCallback = error => {
     if (
       error.code === 2 &&
       error.message === 'No location provider available.'
@@ -295,13 +305,10 @@ export default class InitialLocationScreen extends Component {
     }
   };
 
-  handleSaveLocation = async (locationCoords) => {
+  handleSaveLocation = async locationCoords => {
     const {latitude, longitude} = locationCoords;
 
     try {
-      // starting loader
-      // this.setState({isProcessing: true});
-
       const deviceInfo = await getData(KEYS.DEVICE_UNIQUE_ID);
 
       if (!deviceInfo) {
@@ -317,18 +324,11 @@ export default class InitialLocationScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/saveUserLatLong',
-        params,
-      );
+      await this.props.login('Customers/saveUserLatLong', params);
 
       // Processing Response
       if (response) {
         const {success, message} = response;
-
-        // this.setState({
-        //   isProcessing: false,
-        // });
 
         if (success) {
           showToast(message);
@@ -336,10 +336,6 @@ export default class InitialLocationScreen extends Component {
           showToast(message);
         }
       } else {
-        // this.setState({
-        //   isProcessing: false,
-        //   isLoading: false,
-        // });
         showToast('Network Request Error...');
       }
     } catch (error) {
@@ -411,11 +407,24 @@ export default class InitialLocationScreen extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isOTPSent: sessionSelectors.isLogin(state),
+});
+
+const mapDispatchToProps = {
+  login: sessionOperations.login,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(InitialLocationScreen);
+
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    // padding: wp(4),
   },
   messageStyle: {
     alignSelf: 'center',

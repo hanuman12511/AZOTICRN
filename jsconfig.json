@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "assets/*": ["assets/*"],
+      "routes/*": ["routes/*"],
+      "state/*": ["state/*"],
+      "utils/*": ["utils/*"],
+      "screens/*": ["screens/*"],
+      "components/*": ["components/*"]
+    }
+  },
+  "include": ["index.js", "App.js", "src/**/*"]
+}
