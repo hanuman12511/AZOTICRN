@@ -1,14 +1,14 @@
-import * as actions from "./actions";
-import * as loaderActions from "../loader/actions";
-import { makeNetworkRequest } from "../../utils";
+import * as actions from './actions';
+import * as loaderActions from '../loader/actions';
+import {makeNetworkRequest} from '../../utils/makeNetworkRequest';
 
-export const liveStories = (requestConfig) => async (dispatch) => {
+export const liveStories = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params, isToken, isJson);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.liveStories(response));
@@ -26,13 +26,14 @@ export const liveStories = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const commentPost = (requestConfig) => async (dispatch) => {
+
+export const commentPost = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params, isToken, isJson);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.commentPost(response));
@@ -50,13 +51,14 @@ export const commentPost = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const likePost = (requestConfig) => async (dispatch) => {
+
+export const likePost = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params, isToken, isJson);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.likePost(response));
@@ -74,13 +76,14 @@ export const likePost = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const newsFeed = (requestConfig) => async (dispatch) => {
+
+export const newsFeed = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params, isToken, isJson);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.newsFeed(response));
@@ -98,37 +101,40 @@ export const newsFeed = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const viewComments = (requestConfig) => async (dispatch) => {
-  try {
-    // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
 
-    if (response) {
-      const { success } = response;
+export const viewComments =
+  (url, params, isToken, isJson) => async dispatch => {
+    try {
+      // dispatch(loaderActions.processing(true));
+      const response = await makeNetworkRequest(url, params, isToken, isJson);
 
-      if (success) {
-        dispatch(actions.viewComments(response));
-        dispatch(loaderActions.processing(false));
+      if (response) {
+        const {success} = response;
+
+        if (success) {
+          dispatch(actions.viewComments(response));
+          dispatch(loaderActions.processing(false));
+        } else {
+          dispatch(actions.error(response));
+          dispatch(loaderActions.processing(false));
+        }
       } else {
-        dispatch(actions.error(response));
+        dispatch(actions.error(null));
         dispatch(loaderActions.processing(false));
       }
-    } else {
-      dispatch(actions.error(null));
+    } catch (error) {
+      dispatch(actions.error(error));
       dispatch(loaderActions.processing(false));
     }
-  } catch (error) {
-    dispatch(actions.error(error));
-    dispatch(loaderActions.processing(false));
-  }
-};
-export const viewLikes = (requestConfig) => async (dispatch) => {
+  };
+
+export const viewLikes = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params, isToken, isJson);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.viewLikes(response));
@@ -146,13 +152,14 @@ export const viewLikes = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const sharePost = (requestConfig) => async (dispatch) => {
+
+export const sharePost = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params, isToken, isJson);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.sharePost(response));
@@ -170,61 +177,67 @@ export const sharePost = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const commentDelete = (requestConfig) => async (dispatch) => {
-  try {
-    // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
 
-    if (response) {
-      const { success } = response;
+export const commentDelete =
+  (url, params, isToken, isJson) => async dispatch => {
+    try {
+      // dispatch(loaderActions.processing(true));
+      const response = await makeNetworkRequest(url, params, isToken, isJson);
 
-      if (success) {
-        dispatch(actions.commentDelete(response));
-        dispatch(loaderActions.processing(false));
+      if (response) {
+        const {success} = response;
+
+        if (success) {
+          dispatch(actions.commentDelete(response));
+          dispatch(loaderActions.processing(false));
+        } else {
+          dispatch(actions.error(response));
+          dispatch(loaderActions.processing(false));
+        }
       } else {
-        dispatch(actions.error(response));
+        dispatch(actions.error(null));
         dispatch(loaderActions.processing(false));
       }
-    } else {
-      dispatch(actions.error(null));
+    } catch (error) {
+      dispatch(actions.error(error));
       dispatch(loaderActions.processing(false));
     }
-  } catch (error) {
-    dispatch(actions.error(error));
-    dispatch(loaderActions.processing(false));
-  }
-};
-export const reportOrBlock = (requestConfig) => async (dispatch) => {
-  try {
-    // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+  };
 
-    if (response) {
-      const { success } = response;
+export const reportOrBlock =
+  (url, params, isToken, isJson) => async dispatch => {
+    console.log('heyyy callelsd');
+    try {
+      // dispatch(loaderActions.processing(true));
+      const response = await makeNetworkRequest(url, params, isToken, isJson);
 
-      if (success) {
-        dispatch(actions.reportOrBlock(response));
-        dispatch(loaderActions.processing(false));
+      if (response) {
+        const {success} = response;
+
+        if (success) {
+          dispatch(actions.reportOrBlock(response));
+          dispatch(loaderActions.processing(false));
+        } else {
+          dispatch(actions.error(response));
+          dispatch(loaderActions.processing(false));
+        }
       } else {
-        dispatch(actions.error(response));
+        dispatch(actions.error(null));
         dispatch(loaderActions.processing(false));
       }
-    } else {
-      dispatch(actions.error(null));
+    } catch (error) {
+      dispatch(actions.error(error));
       dispatch(loaderActions.processing(false));
     }
-  } catch (error) {
-    dispatch(actions.error(error));
-    dispatch(loaderActions.processing(false));
-  }
-};
-export const addReaction = (requestConfig) => async (dispatch) => {
+  };
+
+export const addReaction = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params, isToken, isJson);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.addReaction(response));

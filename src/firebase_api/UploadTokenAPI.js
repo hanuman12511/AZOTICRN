@@ -1,11 +1,11 @@
 import {getUniqueId} from 'react-native-device-info';
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 // User Preference
 import {KEYS, storeData} from '../api/UserPreference';
 
-const uploadToken = async (fcmToken) => {
+const uploadToken = async fcmToken => {
   try {
     // fetching device's unique id
     let uniqueId = getUniqueId();
@@ -18,8 +18,8 @@ const uploadToken = async (fcmToken) => {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/uploadToken',
+      const response = await makeNetworkRequest(
+        'Customers/uploadToken',
         params,
       );
 

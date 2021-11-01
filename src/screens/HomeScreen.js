@@ -46,7 +46,16 @@ import ProcessingLoader from '../components/ProcessingLoader';
 import {showToast} from '../components/CustomToast';
 // import uploadToken from '../firebase_api/UploadTokenAPI';
 
-import {InstagramLoader} from 'react-native-easy-content-loader';
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {homeSelectors, homeOperations} from 'state/ducks/home';
+import {cartSelectors, cartOperations} from 'state/ducks/cart';
+import {
+  cartCountSelectors,
+  cartCountOperations,
+} from 'state/ducks/cartItemCount';
+import {postsSelectors, postsOperations} from 'state/ducks/posts';
 
 // UserPreference
 import {KEYS, storeData, getData} from '../api/UserPreference';
@@ -64,9 +73,10 @@ import {
 // References
 export let homeScreenFetchNotificationCount = null;
 
-export default class HomeScreen extends Component {
+class HomeScreen extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       liveStories: null,
       tabActive: 'Feed',
@@ -92,7 +102,7 @@ export default class HomeScreen extends Component {
     this.fetchCartCount();
     this.fetchNotificationCount();
     this.fetchStories();
-    // await uploadToken();
+
     if (isAppOpenedByRemoteNotificationWhenAppClosed) {
       resetIsAppOpenedByRemoteNotificationWhenAppClosed();
       this.props.navigation.navigate('Notification');
@@ -124,7 +134,7 @@ export default class HomeScreen extends Component {
     }
   };
 
-  handleAppStateChange = async (nextAppState) => {
+  handleAppStateChange = async nextAppState => {
     try {
       const {appState} = this.state;
       if (appState.match(/inactive|background/) && nextAppState === 'active') {
@@ -156,11 +166,14 @@ export default class HomeScreen extends Component {
           payloadId,
         };
         // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Notifications/getNotificationCount',
+
+        await this.props.getNotificationCount(
+          'Notifications/getNotificationCount',
           params,
           true,
         );
+
+        const {isGetNotificationCount: response} = this.props;
 
         // processing response
         if (response) {
@@ -168,7 +181,7 @@ export default class HomeScreen extends Component {
 
           if (success) {
             const {notificationCount} = response;
-            await storeData(KEYS.NOTIFICATION_COUNT, {notificationCount});
+
             this.setState({
               notificationCount,
               isLoading: false,
@@ -199,10 +212,9 @@ export default class HomeScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/cartCount',
-        params,
-      );
+      await this.props.getCartCount('Customers/cartCount', params);
+
+      const {isGetCartCount: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -210,7 +222,8 @@ export default class HomeScreen extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          this.props.saveCartCount(cartItemCount);
+          // // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
@@ -238,12 +251,9 @@ export default class HomeScreen extends Component {
       // starting loader
       this.setState({isLoading: true});
 
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/liveStories',
-        false,
-        true,
-      );
+      await this.props.liveStories('Customers/liveStories', null, false, true);
+
+      const {isLiveStories: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -319,12 +329,16 @@ export default class HomeScreen extends Component {
         isPoll,
       };
 
+      await this.props.addReaction('Customers/addReaction', params, true);
+
+      const {isAddReaction: response} = this.props;
+
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/addReaction',
-        params,
-        true,
-      );
+      // const response = await makeRequest(
+      //   BASE_URL + 'Customers/addReaction',
+      //   params,
+      //   true,
+      // );
 
       // Processing Response
       if (response) {
@@ -405,12 +419,16 @@ export default class HomeScreen extends Component {
         comment,
       };
 
+      await this.props.commentPost('Customers/liveStories', params, true);
+
+      const {isCommentPost: response} = this.props;
+
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/commentPost',
-        params,
-        true,
-      );
+      // const response = await makeRequest(
+      //   BASE_URL + 'Customers/commentPost',
+      //   params,
+      //   true,
+      // );
 
       // Processing Response
       if (response) {
@@ -485,12 +503,16 @@ export default class HomeScreen extends Component {
         reasion: reason,
       };
 
+      await this.props.reportOrBlock('Customers/reportOrBlock', params, true);
+
+      const {isReportOrBlock: response} = this.props;
+
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/reportOrBlock',
-        params,
-        true,
-      );
+      // const response = await makeRequest(
+      //   BASE_URL + 'Customers/reportOrBlock',
+      //   params,
+      //   true,
+      // );
 
       // Processing Response
       if (response) {
@@ -532,10 +554,6 @@ export default class HomeScreen extends Component {
       console.log(error.message);
     }
   };
-
-  // screenRefresher = async () => {
-  //   await this.setState({tabActive: 'Feed'});
-  // };
 
   renderSlots = () => {
     const {tabActive} = this.state;
@@ -616,7 +634,7 @@ export default class HomeScreen extends Component {
     }
   };
 
-  selectAddressCallback = async (formatted_address) => {
+  selectAddressCallback = async formatted_address => {
     await this.setState({
       currentLocation: formatted_address,
       // tabActive: 'Live',
@@ -762,6 +780,31 @@ export default class HomeScreen extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isGetNotificationCount: homeSelectors.isGetNotificationCount(state),
+  isGetCartCount: cartSelectors.isGetCartCount(state),
+  isLiveStories: postsSelectors.isLiveStories(state),
+  isAddReaction: postsSelectors.isAddReaction(state),
+  isCommentPost: postsSelectors.isCommentPost(state),
+  isReportOrBlock: postsSelectors.isReportOrBlock(state),
+  getCartItemCount: cartCountSelectors.getCartItemCount(state),
+  getCartItemCount: cartCountSelectors.getCartItemCount(state),
+});
+
+const mapDispatchToProps = {
+  getNotificationCount: homeOperations.getNotificationCount,
+  saveCartCount: cartCountOperations.saveCartCount,
+  getCartCount: cartOperations.getCartCount,
+  liveStories: postsOperations.liveStories,
+  addReaction: postsOperations.addReaction,
+  commentPost: postsOperations.commentPost,
+  reportOrBlock: postsOperations.reportOrBlock,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

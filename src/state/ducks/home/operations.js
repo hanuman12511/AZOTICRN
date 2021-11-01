@@ -1,14 +1,14 @@
-import * as actions from "./actions";
-import { makeNetworkRequest } from "../../utils";
-import * as loaderActions from "../loader/actions";
+import * as actions from './actions';
+import {makeNetworkRequest} from '../../utils/makeNetworkRequest';
+import * as loaderActions from '../loader/actions';
 
-export const uploadToken = (requestConfig) => async (dispatch) => {
+export const uploadToken = requestConfig => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(requestConfig);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.uploadToken(response));
@@ -26,13 +26,13 @@ export const uploadToken = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const notificationList = (requestConfig) => async (dispatch) => {
+export const notificationList = requestConfig => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(requestConfig);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.notificationList(response));
@@ -50,13 +50,13 @@ export const notificationList = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const getNotificationCount = (requestConfig) => async (dispatch) => {
+export const getNotificationCount = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(requestConfig);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.getNotificationCount(response));
@@ -74,13 +74,13 @@ export const getNotificationCount = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const resetNotificationCount = (requestConfig) => async (dispatch) => {
+export const resetNotificationCount = requestConfig => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(requestConfig);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.resetNotificationCount(response));
@@ -98,13 +98,13 @@ export const resetNotificationCount = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const contactUs = (requestConfig) => async (dispatch) => {
+export const contactUs = requestConfig => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(requestConfig);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.contactUs(response));
@@ -122,27 +122,28 @@ export const contactUs = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const saveUserLatLong = (requestConfig) => async (dispatch) => {
-  try {
-    // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+export const saveUserLatLong =
+  (url, params, isToken, isJson) => async dispatch => {
+    try {
+      dispatch(loaderActions.processing(true));
+      const response = await makeNetworkRequest(url, params, isToken);
 
-    if (response) {
-      const { success } = response;
+      if (response) {
+        const {success} = response;
 
-      if (success) {
-        dispatch(actions.saveUserLatLong(response));
-        dispatch(loaderActions.processing(false));
+        if (success) {
+          dispatch(actions.saveUserLatLong(response));
+          dispatch(loaderActions.processing(false));
+        } else {
+          dispatch(actions.error(response));
+          dispatch(loaderActions.processing(false));
+        }
       } else {
-        dispatch(actions.error(response));
+        dispatch(actions.error(null));
         dispatch(loaderActions.processing(false));
       }
-    } else {
-      dispatch(actions.error(null));
+    } catch (error) {
+      dispatch(actions.error(error));
       dispatch(loaderActions.processing(false));
     }
-  } catch (error) {
-    dispatch(actions.error(error));
-    dispatch(loaderActions.processing(false));
-  }
-};
+  };

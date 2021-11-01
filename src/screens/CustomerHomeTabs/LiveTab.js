@@ -141,7 +141,7 @@ export default class LiveTab extends Component {
     );
   };
 
-  handleSelectedSortValue = (selectedSortValue) => async () => {
+  handleSelectedSortValue = selectedSortValue => async () => {
     await this.setState({selectedSortValue});
     this.handleFilter();
     await this.fetchFoodProducts();
@@ -448,7 +448,7 @@ export default class LiveTab extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
@@ -498,12 +498,12 @@ export default class LiveTab extends Component {
     }
   };
 
-  handleMobile = async (changedText) => {
+  handleMobile = async changedText => {
     await this.setState({keyword: changedText});
     await this.handleSearchProducts();
   };
 
-  handleSelectGender = async (value) => {
+  handleSelectGender = async value => {
     let initial = value === 'Agro' ? 1 : 0;
 
     this.setState({orderType: value, initial: initial});
@@ -520,7 +520,7 @@ export default class LiveTab extends Component {
   };
 
   handleFilter = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       showFilters: !prevState.showFilters,
     }));
   };

@@ -215,7 +215,7 @@ export default class extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          // // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
@@ -288,7 +288,7 @@ export default class extends Component {
     }
   };
 
-  handleDeleteItem = async (cartId) => {
+  handleDeleteItem = async cartId => {
     try {
       // starting loader
       this.setState({isProcessing: true, isListRefreshing: false});
@@ -495,7 +495,7 @@ export default class extends Component {
     });
   };
 
-  handleCouponChange = (changedText) => {
+  handleCouponChange = changedText => {
     this.setState({couponCode: changedText});
   };
 

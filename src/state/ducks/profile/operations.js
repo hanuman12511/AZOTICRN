@@ -1,8 +1,8 @@
 import * as actions from './actions';
-import {makeNetworkRequest} from '../../utils';
+import {makeNetworkRequest} from '../../utils/makeNetworkRequest';
 import * as loaderActions from '../loader/actions';
 
-export const profile = (requestConfig) => async (dispatch) => {
+export const profile = requestConfig => async dispatch => {
   try {
     const response = await makeNetworkRequest(requestConfig);
 
@@ -20,7 +20,7 @@ export const profile = (requestConfig) => async (dispatch) => {
   }
 };
 
-export const updateProfile = (requestConfig) => async (dispatch) => {
+export const updateProfile = requestConfig => async dispatch => {
   try {
     dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(requestConfig);

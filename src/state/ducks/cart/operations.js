@@ -1,14 +1,14 @@
-import * as actions from "./actions";
-import * as loaderActions from "../loader/actions";
-import { makeNetworkRequest } from "../../utils";
+import * as actions from './actions';
+import * as loaderActions from '../loader/actions';
+import {makeNetworkRequest} from '../../utils/makeNetworkRequest';
 
-export const addToCart = (requestConfig) => async (dispatch) => {
+export const addToCart = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.addToCart(response));
@@ -26,13 +26,14 @@ export const addToCart = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const getCartList = (requestConfig) => async (dispatch) => {
+
+export const getCartList = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.getCartList(response));
@@ -50,13 +51,14 @@ export const getCartList = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const deleteCart = (requestConfig) => async (dispatch) => {
+
+export const deleteCart = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.deleteCart(response));
@@ -74,13 +76,14 @@ export const deleteCart = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const checkout = (requestConfig) => async (dispatch) => {
+
+export const checkout = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.checkout(response));
@@ -98,13 +101,14 @@ export const checkout = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const deleteCartItem = (requestConfig) => async (dispatch) => {
+
+export const deleteCartItem = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.deleteCartItem(response));
@@ -122,13 +126,14 @@ export const deleteCartItem = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const placeOrder = (requestConfig) => async (dispatch) => {
+
+export const placeOrder = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.placeOrder(response));
@@ -146,13 +151,14 @@ export const placeOrder = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const getCartCount = (requestConfig) => async (dispatch) => {
+
+export const getCartCount = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.getCartCount(response));
@@ -170,13 +176,14 @@ export const getCartCount = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const updateCart = (requestConfig) => async (dispatch) => {
+
+export const updateCart = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.updateCart(response));
@@ -194,13 +201,14 @@ export const updateCart = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const verifyPayment = (requestConfig) => async (dispatch) => {
+
+export const verifyPayment = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.verifyPayment(response));
@@ -218,13 +226,14 @@ export const verifyPayment = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const getFavouites = (requestConfig) => async (dispatch) => {
+
+export const getFavouites = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.getFavouites(response));
@@ -242,13 +251,14 @@ export const getFavouites = (requestConfig) => async (dispatch) => {
     dispatch(loaderActions.processing(false));
   }
 };
-export const getPromoCodes = (requestConfig) => async (dispatch) => {
+
+export const getPromoCodes = (url, params) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
-    const response = await makeNetworkRequest(requestConfig);
+    const response = await makeNetworkRequest(url, params);
 
     if (response) {
-      const { success } = response;
+      const {success} = response;
 
       if (success) {
         dispatch(actions.getPromoCodes(response));

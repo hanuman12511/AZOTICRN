@@ -156,7 +156,7 @@ export default class VendorsTab extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
@@ -450,7 +450,7 @@ export default class VendorsTab extends Component {
     }
   };
 
-  handleMobile = async (changedText) => {
+  handleMobile = async changedText => {
     await this.setState({keyword: changedText});
 
     await this.handleSearchProducts();
@@ -484,7 +484,7 @@ export default class VendorsTab extends Component {
     }
   };
 
-  handleSelectedSortValue = (sortingValue) => async () => {
+  handleSelectedSortValue = sortingValue => async () => {
     await this.setState({sortingValue});
     this.handleFilter();
     await this.fetchFoodVendors();
@@ -493,19 +493,14 @@ export default class VendorsTab extends Component {
   };
 
   handleFilter = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       showFilters: !prevState.showFilters,
     }));
   };
 
   render() {
-    const {
-      contentLoading,
-      isProcessing,
-      showFilters,
-      cartItemCount,
-      vendors,
-    } = this.state;
+    const {contentLoading, isProcessing, showFilters, cartItemCount, vendors} =
+      this.state;
     return (
       <SafeAreaView style={[basicStyles.container]}>
         {contentLoading === true ? (
@@ -609,7 +604,7 @@ export default class VendorsTab extends Component {
             {vendors ? (
               <View style={styles.flatContainer}>
                 <FlatList
-                  ref={(ref) => (this.flatListRef = ref)}
+                  ref={ref => (this.flatListRef = ref)}
                   data={vendors}
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}

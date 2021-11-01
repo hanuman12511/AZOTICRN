@@ -44,14 +44,10 @@ import APP_Banner2 from '../assets/images/APP_Banner2.jpg';
 import APP_Banner3 from '../assets/images/APP_Banner3.gif';
 import {getData, KEYS, storeData} from '../api/UserPreference';
 
+// Redux
 import {connect} from 'react-redux';
-
-// selectors
 import {loaderSelectors} from 'state/ducks/loader';
-import {sessionSelectors} from 'state/ducks/session';
-
-// operations
-import {sessionOperations} from 'state/ducks/session';
+import {homeOperations, homeSelectors} from 'state/ducks/home';
 
 class InitialLocationScreen extends Component {
   constructor(props) {
@@ -324,7 +320,9 @@ class InitialLocationScreen extends Component {
       };
 
       // calling api
-      await this.props.login('Customers/saveUserLatLong', params);
+      await this.props.saveUserLatLong('Customers/saveUserLatLong', params);
+
+      const {isSaveUserLatLong: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -409,11 +407,11 @@ class InitialLocationScreen extends Component {
 
 const mapStateToProps = state => ({
   isProcessing: loaderSelectors.isProcessing(state),
-  isOTPSent: sessionSelectors.isLogin(state),
+  isSaveUserLatLong: homeSelectors.isSaveUserLatLong(state),
 });
 
 const mapDispatchToProps = {
-  login: sessionOperations.login,
+  saveUserLatLong: homeOperations.saveUserLatLong,
 };
 
 export default connect(

@@ -40,7 +40,18 @@ import {KEYS, storeData, getData, clearData} from '../../api/UserPreference';
 // API
 import {BASE_URL, makeRequest} from '../../api/ApiInfo';
 
-export default class NewsFeeds extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {homeSelectors, homeOperations} from 'state/ducks/home';
+import {cartSelectors, cartOperations} from 'state/ducks/cart';
+import {
+  cartCountSelectors,
+  cartCountOperations,
+} from 'state/ducks/cartItemCount';
+import {postsSelectors, postsOperations} from 'state/ducks/posts';
+
+class NewsFeeds extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -63,10 +74,10 @@ export default class NewsFeeds extends Component {
   }
 
   componentDidMount = async () => {
-    this.fetchCartCount();
+    // this.fetchCartCount();
     this.fetchNewsFeeds();
     this.fetchNotificationCount();
-    this.props.fetchStories();
+    // this.props.fetchStories();
     // await uploadToken();
   };
 
@@ -87,12 +98,10 @@ export default class NewsFeeds extends Component {
 
       const userInfo = await getData(KEYS.USER_INFO);
 
-      let params = {offset, deviceId};
-      let response = null;
+      let params = null;
 
       if (!userInfo) {
-        // calling api
-        response = await makeRequest(BASE_URL + 'Customers/newsFeed', params);
+        params = {offset, deviceId};
       } else if (userInfo) {
         const {payloadId} = userInfo;
 
@@ -101,10 +110,16 @@ export default class NewsFeeds extends Component {
           offset,
           deviceId,
         };
-
-        // calling api
-        response = await makeRequest(BASE_URL + 'Customers/newsFeed', params);
       }
+
+      await this.props.newsFeed('Customers/newsFeed', params);
+
+      const {isNewsFeed: response} = this.props;
+
+      // const response = await makeRequest(
+      //   BASE_URL + 'Customers/newsFeed',
+      //   params,
+      // );
 
       // Processing Response
       if (response) {
@@ -208,68 +223,11 @@ export default class NewsFeeds extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
           });
-        }
-      } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
-        });
-        showToast('Network Request Error...');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  fetchStories = async () => {
-    try {
-      const userInfo = await getData(KEYS.USER_INFO);
-
-      if (!userInfo) {
-        return;
-      }
-      // starting loader
-      this.setState({isLoading: true});
-
-      // calling api
-      const response = await makeRequest(BASE_URL + 'Customers/liveStories');
-
-      // Processing Response
-      if (response) {
-        const {success} = response;
-
-        if (success) {
-          const {liveStories} = response;
-
-          this.setState({
-            liveStories,
-            status: null,
-            isLoading: false,
-          });
-        } else {
-          const {message, isAuthTokenExpired} = response;
-
-          this.setState({
-            status: message,
-            liveStories: null,
-            isLoading: false,
-          });
-
-          if (isAuthTokenExpired === true) {
-            Alert.alert(
-              'Session Expired',
-              'Login Again to Continue!',
-              [{text: 'OK', onPress: this.handleTokenExpire}],
-              {
-                cancelable: false,
-              },
-            );
-          }
         }
       } else {
         this.setState({
@@ -429,7 +387,7 @@ export default class NewsFeeds extends Component {
     }
   };
 
-  handleSharePost = async (postId) => {
+  handleSharePost = async postId => {
     try {
       // starting loader
       this.setState({isProcessing: true});
@@ -501,7 +459,7 @@ export default class NewsFeeds extends Component {
     }
   };
 
-  handleShare = async (referralInfo) => {
+  handleShare = async referralInfo => {
     try {
       const {shareInfo} = referralInfo;
       const {title, description, appUrl, image} = shareInfo;
@@ -528,7 +486,7 @@ export default class NewsFeeds extends Component {
     }
   };
 
-  encodeImageToBase64 = async (imageUrl) => {
+  encodeImageToBase64 = async imageUrl => {
     try {
       const fs = RNFetchBlob.fs;
       const rnFetchBlob = RNFetchBlob.config({fileCache: true});
@@ -652,20 +610,20 @@ export default class NewsFeeds extends Component {
     );
   };
 
-  reportHandler = (reason) => () => {
+  reportHandler = reason => () => {
     Alert.alert('Report', 'Do you want to Block?', [
       {
         text: 'No',
-        onPress: this.handleReportStory(this.postId, false, reason),
+        onPress: this.handleReportPost(this.postId, false, reason),
       },
       {
         text: 'Block',
-        onPress: this.handleReportStory(this.postId, true, reason),
+        onPress: this.handleReportPost(this.postId, true, reason),
       },
     ]);
   };
 
-  handleReportStory = (postId, is_block, reason) => async () => {
+  handleReportPost = (postId, is_block, reason) => async () => {
     // Checking Login
     this.reportPopClose();
 
@@ -697,12 +655,16 @@ export default class NewsFeeds extends Component {
         reasion: reason,
       };
 
+      await this.props.reportOrBlock('Customers/reportOrBlock', params, true);
+
+      const {isReportOrBlock: response} = this.props;
+
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/reportOrBlock',
-        params,
-        true,
-      );
+      // const response = await makeRequest(
+      //   BASE_URL + 'Customers/reportOrBlock',
+      //   params,
+      //   true,
+      // );
 
       // Processing Response
       if (response) {
@@ -715,7 +677,7 @@ export default class NewsFeeds extends Component {
 
         if (success) {
           const {message} = response;
-          await this.fetchNewsFeeds();
+          // await this.fetchNewsFeeds();
           showToast(message);
         } else {
           const {message, isAuthTokenExpired} = response;
@@ -749,13 +711,8 @@ export default class NewsFeeds extends Component {
     this.setState({isReportPop: false});
   };
   render() {
-    const {
-      liveStories,
-      contentLoading,
-      newsFeeds,
-      cartItemCount,
-      status,
-    } = this.state;
+    const {liveStories, contentLoading, newsFeeds, cartItemCount, status} =
+      this.state;
 
     let options = [
       {id: 1, reason: "It's spam"},
@@ -858,6 +815,29 @@ export default class NewsFeeds extends Component {
     );
   }
 }
+
+const mapDispatchToProps = {
+  getNotificationCount: homeOperations.getNotificationCount,
+  saveCartCount: cartCountOperations.saveCartCount,
+  getCartCount: cartOperations.getCartCount,
+  newsFeed: postsOperations.newsFeed,
+  addReaction: postsOperations.addReaction,
+  commentPost: postsOperations.commentPost,
+  reportOrBlock: postsOperations.reportOrBlock,
+};
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isGetNotificationCount: homeSelectors.isGetNotificationCount(state),
+  isGetCartCount: cartSelectors.isGetCartCount(state),
+  isNewsFeed: postsSelectors.isNewsFeed(state),
+  isAddReaction: postsSelectors.isAddReaction(state),
+  isCommentPost: postsSelectors.isCommentPost(state),
+  isReportOrBlock: postsSelectors.isReportOrBlock(state),
+  getCartItemCount: cartCountSelectors.getCartItemCount(state),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewsFeeds);
 
 const styles = StyleSheet.create({
   container: {

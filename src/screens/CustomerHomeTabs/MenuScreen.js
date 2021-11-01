@@ -137,7 +137,7 @@ export default class MenuScreen extends Component {
       this.productId = productId;
       this.activeStatus = activeStatus;
 
-      let index = products.findIndex((x) => x.productId === productId);
+      let index = products.findIndex(x => x.productId === productId);
 
       if (index >= 0) {
         setTimeout(() => this.flatListRef.scrollToIndex({index}), 500);
@@ -180,7 +180,7 @@ export default class MenuScreen extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
@@ -255,7 +255,7 @@ export default class MenuScreen extends Component {
         if (success) {
           const {products, slots, selectedSlot} = response;
 
-          const slotsData = slots.map((item) => ({
+          const slotsData = slots.map(item => ({
             Id: item.id,
             Name: item.slot,
             Value: item.date,
@@ -366,7 +366,7 @@ export default class MenuScreen extends Component {
     this.setState({showQualityPopup: true});
   };
 
-  cartCountUpdate = async (msg) => {
+  cartCountUpdate = async msg => {
     const {fetchCartItemCount} = this.props;
 
     await fetchCartItemCount(msg);
@@ -391,7 +391,7 @@ export default class MenuScreen extends Component {
   };
 
   //Cart Pop Up Content
-  getProductDetails = async (productId) => {
+  getProductDetails = async productId => {
     try {
       // starting loader
       this.setState({isProcessing: true});
@@ -649,11 +649,11 @@ export default class MenuScreen extends Component {
     }
   };
 
-  handleMessage = (changedText) => {
+  handleMessage = changedText => {
     this.setState({note: changedText});
   };
 
-  handleRadioButtonPress = (selectedRadioButtonIndex) => {
+  handleRadioButtonPress = selectedRadioButtonIndex => {
     const {productVariants} = this.state;
     const {quantity} = this.state;
     let custom = productVariants[selectedRadioButtonIndex].name;
@@ -787,7 +787,7 @@ export default class MenuScreen extends Component {
     />
   );
 
-  handleRemoveImage = (itemIndex) => {
+  handleRemoveImage = itemIndex => {
     let removedImages = this.state.cameraImages;
 
     if (itemIndex > -1) {
@@ -900,7 +900,7 @@ export default class MenuScreen extends Component {
     }
   };
 
-  handleSelectSlot = async (selectedSlots) => {
+  handleSelectSlot = async selectedSlots => {
     // const {Value} = selectedSlots;
 
     if (Object.keys(selectedSlots).length > 0) {
@@ -994,7 +994,7 @@ export default class MenuScreen extends Component {
             {products ? (
               <View style={basicStyles.paddingTop}>
                 <FlatList
-                  ref={(ref) => (this.flatListRef = ref)}
+                  ref={ref => (this.flatListRef = ref)}
                   data={this.state.products}
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}

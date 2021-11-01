@@ -20,7 +20,14 @@ import basicStyles from '../styles/BasicStyles';
 // User Preference
 import {KEYS, getData} from '../api/UserPreference';
 
-export default class HeaderComponent extends PureComponent {
+// Redux
+import {connect} from 'react-redux';
+import {
+  cartCountOperations,
+  cartCountSelectors,
+} from 'state/ducks/cartItemCount';
+
+class HeaderComponent extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -31,18 +38,18 @@ export default class HeaderComponent extends PureComponent {
       notificationCount: 0,
     };
   }
-  intervalID;
+  // intervalID;
 
   componentDidMount() {
     this.fetchUser();
-    if (this.props.showCartIcon) {
-      this.fetchCartItemCount();
-      this.fetchNotificationCount();
-      this.intervalID = setTimeout(this.componentDidMount.bind(this), 3000);
-    }
+    // if (this.props.showCartIcon) {
+    //   this.fetchCartItemCount();
+    //   this.fetchNotificationCount();
+    //   this.intervalID = setTimeout(this.componentDidMount.bind(this), 3000);
+    // }
   }
   componentWillUnmount() {
-    clearTimeout(this.intervalID);
+    // clearTimeout(this.intervalID);
   }
 
   fetchUser = async () => {
@@ -124,7 +131,10 @@ export default class HeaderComponent extends PureComponent {
       showCartIcon,
       showAccountIcon,
       showNotification,
+      cartItemCount,
     } = this.props;
+
+    console.log(this.props);
 
     let handleNavAction;
     if (navAction === 'back') {
@@ -136,7 +146,7 @@ export default class HeaderComponent extends PureComponent {
     // const showNotificationBadge = notificationCount > 0;
     // const isNotificationCountUpToTwoDigit = notificationCount < 100;
 
-    const {cartItemCount, userImage, notificationCount} = this.state;
+    const {userImage, notificationCount} = this.state;
     const showCartBadge = cartItemCount > 0;
     const isCartCountTwoDigit = cartItemCount < 100;
 
@@ -316,6 +326,17 @@ export default class HeaderComponent extends PureComponent {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  cartItemCount: cartCountSelectors.getCartItemCount(state),
+});
+
+const mapDispatchToProps = {
+  getCartItemCount: cartCountOperations.getCartItemCount,
+  // saveAvailableBalance: availableBalanceOperations.saveAvailableBalance,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderComponent);
 
 const styles = StyleSheet.create({
   headerContainer: {

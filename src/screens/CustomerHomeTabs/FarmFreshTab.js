@@ -142,7 +142,7 @@ export default class FarmFreshTab extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
@@ -437,7 +437,7 @@ export default class FarmFreshTab extends Component {
     }
   };
 
-  handleMobile = async (changedText) => {
+  handleMobile = async changedText => {
     await this.setState({keyword: changedText});
 
     await this.handleSearchProducts();
@@ -472,12 +472,12 @@ export default class FarmFreshTab extends Component {
   };
 
   handleFilter = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       showFilters: !prevState.showFilters,
     }));
   };
 
-  handleSelectedSortValue = (sortingValue) => async () => {
+  handleSelectedSortValue = sortingValue => async () => {
     await this.setState({sortingValue});
     this.handleFilter();
     await this.fetchFoodVendors();

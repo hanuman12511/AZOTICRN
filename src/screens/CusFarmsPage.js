@@ -48,14 +48,8 @@ export default class CusFarmsPage extends Component {
     super(props);
     const item = props.navigation.getParam('item', null);
     this.item = item;
-    const {
-      vendorId,
-      productId,
-      activeStatus,
-      initial,
-      follow,
-      vendorAddress,
-    } = item;
+    const {vendorId, productId, activeStatus, initial, follow, vendorAddress} =
+      item;
 
     this.state = {
       followStatus: follow,
@@ -192,7 +186,7 @@ export default class CusFarmsPage extends Component {
     }
   };
 
-  fetchCartItemCount = async (msg) => {
+  fetchCartItemCount = async msg => {
     try {
       const refreshCallback = await this.props.navigation.getParam(
         'refreshCallback',
@@ -228,7 +222,7 @@ export default class CusFarmsPage extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          // // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
@@ -246,7 +240,7 @@ export default class CusFarmsPage extends Component {
     }
   };
 
-  handleTabIndexChange = (index) => {
+  handleTabIndexChange = index => {
     const tabView = {...this.state.tabView, index};
     this.setState({tabView});
   };
@@ -581,7 +575,7 @@ export default class CusFarmsPage extends Component {
     await clearData();
     this.props.navigation.navigate('Login');
   };
-  renderTabBar = (props) => (
+  renderTabBar = props => (
     <TabBar
       {...props}
       indicatorStyle={styles.tabBarIndicator}

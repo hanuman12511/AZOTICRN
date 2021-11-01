@@ -8,8 +8,9 @@ import {encryptData} from './EncryptionUtility';
 import {getData} from './UserPreference';
 
 // Base URL
-// export const BASE_URL = 'https://templatelaboratory.com/api/';      /* Local URL */
-export const BASE_URL = 'https://www.agzotic.com/api/'; //     /* Live URL */
+// export const BASE_URL = 'https://templatelaboratory.com/api/'; /* Local URL */
+// export const BASE_URL = 'https://www.agzotic.com/api/'; //     /* Live URL */
+export const BASE_URL = 'https://admin.agzotic.com/api/'; //     /* Live URL */
 
 const AXIOS = axios.create({
   baseURL: BASE_URL,
@@ -23,8 +24,8 @@ const AXIOS = axios.create({
 export const makeNetworkRequest = async (
   url,
   params = null,
-  sendAuthorizationToken = true,
-  isContentTypeJSON = true,
+  sendAuthorizationToken = false,
+  isContentTypeJSON = false,
 ) => {
   try {
     // request info
@@ -50,7 +51,7 @@ export const makeNetworkRequest = async (
       }
 
       // request body
-      console.log('Request params:', params);
+
       if (isContentTypeJSON) {
         // request headers
         info.headers = {
@@ -104,11 +105,11 @@ export const makeNetworkRequest = async (
     }
 
     const response = await AXIOS.request(info);
-    console.log('Request URL:', BASE_URL + url);
-    console.log('Request Info:', info);
+    // console.log('Request URLll:', BASE_URL + url);
+    // console.log('Request Info:', info);
 
     const result = response.data;
-    console.log('Request Result:', result);
+    // console.log('Request Result:', result);
 
     return result;
   } catch (error) {

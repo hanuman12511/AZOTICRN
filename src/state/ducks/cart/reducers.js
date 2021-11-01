@@ -1,5 +1,5 @@
-import * as types from "./types";
-import { combineReducers } from "redux";
+import * as types from './types';
+import {combineReducers} from 'redux';
 
 const addToCartReducer = (state = {}, action) => {
   switch (action.type) {

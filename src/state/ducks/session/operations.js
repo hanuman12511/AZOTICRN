@@ -1,6 +1,6 @@
 import * as actions from './actions';
 import * as loaderActions from '../loader/actions';
-import {makeNetworkRequest} from '../../utils';
+import {makeNetworkRequest} from '../../utils/makeNetworkRequest';
 
 export const login = (url, params) => async dispatch => {
   try {

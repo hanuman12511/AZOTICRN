@@ -218,7 +218,7 @@ export default class CheckoutScreen extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          // // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,
@@ -267,7 +267,7 @@ export default class CheckoutScreen extends Component {
     this.setState({selectedSlot, selectedSlotIndex});
   };
 
-  selectTimeSlotCallback = (selectedTimeSlotId) => {
+  selectTimeSlotCallback = selectedTimeSlotId => {
     this.setState({selectedTimeSlotId});
   };
 
