@@ -32,7 +32,13 @@ import {clearData, KEYS, getData, storeData} from '../api/UserPreference';
 // API
 import {BASE_URL, makeRequest} from '../api/ApiInfo';
 
-export default class likesScreen extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+
+import {postsSelectors, postsOperations} from 'state/ducks/posts';
+
+class likesScreen extends Component {
   constructor(props) {
     super(props);
 
@@ -75,11 +81,15 @@ export default class likesScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/viewLikes',
-        params,
-        true,
-      );
+      await this.props.viewComments('Customers/viewLikes', params, true);
+      const {isViewComments: response} = this.props;
+
+      // // calling api
+      // const response = await makeRequest(
+      //   BASE_URL + 'Customers/viewLikes',
+      //   params,
+      //   true,
+      // );
 
       // Processing Response
       if (response) {
@@ -141,7 +151,7 @@ export default class likesScreen extends Component {
     />
   );
 
-  handleProfilePopup = async (item) => {
+  handleProfilePopup = async item => {
     await this.setState({profileData: item});
     this.setState({showFormPopup: true});
   };
@@ -189,6 +199,22 @@ export default class likesScreen extends Component {
     );
   }
 }
+
+const mapDispatchToProps = {
+  commentPost: postsOperations.commentPost,
+  viewComments: postsOperations.viewComments,
+  reportOrBlock: postsOperations.reportOrBlock,
+  viewLikes: postsOperations.viewLikes,
+};
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isCommentPost: postsSelectors.isCommentPost(state),
+  isReportOrBlock: postsSelectors.isReportOrBlock(state),
+  isViewLikes: postsSelectors.isViewLikes(state),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(likesScreen);
 
 const styles = StyleSheet.create({
   container: {

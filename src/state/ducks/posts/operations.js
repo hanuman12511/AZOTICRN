@@ -32,6 +32,8 @@ export const commentPost = (url, params, isToken, isJson) => async dispatch => {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(url, params, isToken, isJson);
 
+    console.log(response);
+
     if (response) {
       const {success} = response;
 
@@ -206,7 +208,6 @@ export const commentDelete =
 
 export const reportOrBlock =
   (url, params, isToken, isJson) => async dispatch => {
-    console.log('heyyy callelsd');
     try {
       // dispatch(loaderActions.processing(true));
       const response = await makeNetworkRequest(url, params, isToken, isJson);

@@ -66,7 +66,21 @@ import {BASE_URL, makeRequest} from '../../api/ApiInfo';
 
 import {InstagramLoader} from 'react-native-easy-content-loader';
 
-export default class FarmsMenuScreen extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {homeSelectors, homeOperations} from 'state/ducks/home';
+import {cartSelectors, cartOperations} from 'state/ducks/cart';
+import {
+  cartCountSelectors,
+  cartCountOperations,
+} from 'state/ducks/cartItemCount';
+import {
+  vendorsFreshSelectors,
+  vendorsFreshOperations,
+} from 'state/ducks/vendorsFresh';
+
+class FarmsMenuScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -113,7 +127,6 @@ export default class FarmsMenuScreen extends Component {
     );
     this.proIdUpdate();
     this.fetchVendorMenu();
-    this.fetchCartCount();
   }
 
   backAction = () => {
@@ -148,11 +161,9 @@ export default class FarmsMenuScreen extends Component {
         deviceId,
       };
 
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/cartCount',
-        params,
-      );
+      await this.props.getCartCount('Customers/cartCount', params);
+
+      const {isGetCartCount: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -166,7 +177,7 @@ export default class FarmsMenuScreen extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          this.props.saveCartCount(cartItemCount);
 
           this.setState({
             cartItemCount,
@@ -195,22 +206,8 @@ export default class FarmsMenuScreen extends Component {
       const {vendorId} = await this.props;
 
       let params = null;
-      let response = null;
 
-      if (!userInfo) {
-        params = {
-          vendorId,
-          type: 'farm',
-          slotId: selectedSlots ? selectedSlots.Id : '',
-          slotDate: this.state.deliveryDate,
-        };
-
-        // calling api
-        response = await makeRequest(
-          BASE_URL + 'Customers/vendorProducts',
-          params,
-        );
-      } else if (userInfo) {
+      if (userInfo) {
         const {payloadId} = userInfo;
 
         params = {
@@ -220,13 +217,11 @@ export default class FarmsMenuScreen extends Component {
           slotId: selectedSlots ? selectedSlots.Id : '',
           slotDate: this.state.deliveryDate,
         };
-
-        // calling api
-        response = await makeRequest(
-          BASE_URL + 'Customers/vendorProducts',
-          params,
-        );
       }
+
+      await this.props.vendorProducts('Customers/vendorProducts', params);
+
+      const {isVendorProducts: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -312,11 +307,11 @@ export default class FarmsMenuScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/addToFavourite',
-        params,
-        true,
-      );
+      await this.props.addToFavourite('Customers/addToFavourite', params, true);
+
+      const {isAddToFavourite: response} = this.props;
+
+      console.log(response);
 
       // Processing Response
       if (response) {
@@ -362,15 +357,10 @@ export default class FarmsMenuScreen extends Component {
   };
 
   handleQualityPopup = async (productId, quantity) => {
-    await this.setState({productId});
-    await this.getProductDetails(productId);
-    this.setState({showQualityPopup: true});
-  };
-
-  cartCountUpdate = async msg => {
-    const {fetchCartItemCount} = this.props;
-
-    await fetchCartItemCount(msg);
+    this.setState({productId}, async () => {
+      this.getProductDetails(productId);
+      this.setState({showQualityPopup: true});
+    });
   };
 
   closePopup = () => {
@@ -402,10 +392,9 @@ export default class FarmsMenuScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/getProductDetail',
-        params,
-      );
+      await this.props.getProductDetail('Customers/getProductDetail', params);
+
+      const {isGetProductDetail: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -525,10 +514,9 @@ export default class FarmsMenuScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/addToCart',
-        params,
-      );
+      await this.props.addToCart('Customers/addToCart', params);
+
+      const {isAddToCart: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -536,9 +524,8 @@ export default class FarmsMenuScreen extends Component {
 
         if (success) {
           this.closePopup();
-          // this.props.nav.navigate('Cart');
-          let msg = 'happy';
-          await this.cartCountUpdate(msg);
+
+          await this.fetchCartCount();
 
           this.setState({
             isProcessing: false,
@@ -605,10 +592,9 @@ export default class FarmsMenuScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/deleteCart',
-        params,
-      );
+      await this.props.deleteCart('Customers/deleteCart', params);
+
+      const {isDeleteCart: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -1157,6 +1143,31 @@ export default class FarmsMenuScreen extends Component {
     );
   }
 }
+
+const mapDispatchToProps = {
+  getNotificationCount: homeOperations.getNotificationCount,
+  saveCartCount: cartCountOperations.saveCartCount,
+  getCartCount: cartOperations.getCartCount,
+  vendorProducts: vendorsFreshOperations.vendorProducts,
+  addToFavourite: vendorsFreshOperations.addToFavourite,
+  getProductDetail: vendorsFreshOperations.getProductDetail,
+  addToCart: cartOperations.addToCart,
+  deleteCart: cartOperations.deleteCart,
+};
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isGetNotificationCount: homeSelectors.isGetNotificationCount(state),
+  isGetCartCount: cartSelectors.isGetCartCount(state),
+  getCartItemCount: cartCountSelectors.getCartItemCount(state),
+  isVendorProducts: vendorsFreshSelectors.isVendorProducts(state),
+  isGetProductDetail: vendorsFreshSelectors.isGetProductDetail(state),
+  isAddToFavourite: vendorsFreshSelectors.isAddToFavourite(state),
+  isAddToCart: cartSelectors.isAddToCart(state),
+  isDeleteCart: cartSelectors.isDeleteCart(state),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(FarmsMenuScreen);
 
 const styles = StyleSheet.create({
   container: {

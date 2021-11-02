@@ -1,5 +1,5 @@
-import * as types from "./types";
-import { combineReducers } from "redux";
+import * as types from './types';
+import {combineReducers} from 'redux';
 
 const getFoodVendorListReducer = (state = {}, action) => {
   switch (action.type) {
@@ -92,6 +92,17 @@ const liveFarmProductsReducer = (state = {}, action) => {
   }
 };
 
+const addToFavouriteReducer = (state = {}, action) => {
+  switch (action.type) {
+    case types.ADD_TO_FAVOURITE:
+      return action.payload;
+    case types.ERROR:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
 const reducer = combineReducers({
   getFoodVendorList: getFoodVendorListReducer,
   followVendor: followVendorReducer,
@@ -102,6 +113,7 @@ const reducer = combineReducers({
   getProductDetail: getProductDetailReducer,
   searchProducts: searchProductsReducer,
   liveFarmProducts: liveFarmProductsReducer,
+  addToFavourite: addToFavouriteReducer,
 });
 
 export default reducer;

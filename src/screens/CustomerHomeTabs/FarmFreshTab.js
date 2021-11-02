@@ -35,17 +35,20 @@ import ic_alphabetical_order from '../../assets/icons/ic_alphabetical_order.png'
 import ic_alphabetical_order2 from '../../assets/icons/ic_alphabetical_order2.png';
 import about_to_end from '../../assets/icons/about_to_end.png';
 
-// VectorIcons
-import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 // UserPreference
-import {KEYS, storeData, clearData, getData} from '../../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../../api/ApiInfo';
+import {KEYS, clearData, getData} from '../../api/UserPreference';
 
 import {InstagramLoader} from 'react-native-easy-content-loader';
 
-export default class FarmFreshTab extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {
+  vendorsFreshSelectors,
+  vendorsFreshOperations,
+} from 'state/ducks/vendorsFresh';
+
+class FarmFreshTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -62,99 +65,12 @@ export default class FarmFreshTab extends Component {
 
   componentDidMount() {
     this.fetchFoodVendors();
-    this.fetchCartCount();
-    this.fetchNotificationCount();
-    this.props.fetchStories();
+    // this.props.fetchStories();
   }
-
-  fetchNotificationCount = async () => {
-    try {
-      // fetching userInfo
-      const userInfo = await getData(KEYS.USER_INFO);
-
-      if (userInfo) {
-        const {payloadId} = userInfo;
-
-        // preparing params
-        const params = {
-          payloadId,
-        };
-        // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Notifications/getNotificationCount',
-          params,
-          true,
-        );
-
-        // processing response
-        if (response) {
-          const {success} = response;
-
-          if (success) {
-            const {notificationCount} = response;
-            await storeData(KEYS.NOTIFICATION_COUNT, {notificationCount});
-            this.setState({
-              notificationCount,
-              isLoading: false,
-            });
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   backAction = async () => {
     try {
       this.props.navigation.navigate('NewsNav');
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  fetchCartCount = async () => {
-    try {
-      // starting loader
-      this.setState({isLoading: true});
-
-      const deviceInfo = await getData(KEYS.DEVICE_UNIQUE_ID);
-
-      if (!deviceInfo) {
-        return;
-      }
-
-      const {deviceId} = deviceInfo;
-
-      const params = {
-        deviceId,
-      };
-
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/cartCount',
-        params,
-      );
-
-      // Processing Response
-      if (response) {
-        const {success} = response;
-
-        if (success) {
-          const {cartCount: cartItemCount} = response;
-          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
-
-          this.setState({
-            cartItemCount,
-          });
-        }
-      } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
-        });
-        showToast('Network Request Error...');
-      }
     } catch (error) {
       console.log(error.message);
     }
@@ -179,15 +95,8 @@ export default class FarmFreshTab extends Component {
         deviceId,
         sortingValue,
       };
-      let response = null;
 
-      if (!userInfo) {
-        // calling api
-        response = await makeRequest(
-          BASE_URL + 'Customers/getFarmVendorList',
-          params,
-        );
-      } else if (userInfo) {
+      if (userInfo) {
         const {payloadId} = userInfo;
 
         params = {
@@ -196,22 +105,14 @@ export default class FarmFreshTab extends Component {
           sortingValue,
           deviceId,
         };
-
-        // calling api
-        response = await makeRequest(
-          BASE_URL + 'Customers/getFarmVendorList',
-          params,
-        );
       }
+
+      // Calling API
+      await this.props.getFarmVendorList('Customers/getFarmVendorList', params);
+      const {isGetFarmVendorList: response} = this.props;
 
       // Processing Response
       if (response) {
-        // this.setState({
-        //   isLoading: false,
-        //   isProcessing: false,
-        //   contentLoading: false,
-        //   isListRefreshing: false,
-        // });
         const {success} = response;
 
         if (success) {
@@ -279,12 +180,9 @@ export default class FarmFreshTab extends Component {
         follow: followStatus,
       };
 
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/followVendor',
-        params,
-        true,
-      );
+      // Calling API
+      await this.props.followVendor('Customers/followVendor', params, true);
+      const {isFollowVendor: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -350,12 +248,8 @@ export default class FarmFreshTab extends Component {
         keyword,
         deviceId,
       };
-      let response = null;
 
-      if (!userInfo) {
-        // calling api
-        response = await makeRequest(BASE_URL + 'Customers/getFarmVendorList');
-      } else if (userInfo) {
+      if (userInfo) {
         const {payloadId} = userInfo;
 
         params = {
@@ -364,13 +258,11 @@ export default class FarmFreshTab extends Component {
           keyword,
           deviceId,
         };
-
-        // calling api
-        response = await makeRequest(
-          BASE_URL + 'Customers/getFarmVendorList',
-          params,
-        );
       }
+
+      // Calling API
+      await this.props.getFarmVendorList('Customers/getFarmVendorList', params);
+      const {isGetFarmVendorList: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -428,19 +320,14 @@ export default class FarmFreshTab extends Component {
   handleListRefresh = async () => {
     try {
       // pull-to-refresh
-      this.setState({isListRefreshing: true});
-
-      // updating list
-      await this.componentDidMount();
+      this.setState({isListRefreshing: true}, this.componentDidMount);
     } catch (error) {
       console.log(error.message);
     }
   };
 
   handleMobile = async changedText => {
-    await this.setState({keyword: changedText});
-
-    await this.handleSearchProducts();
+    this.setState({keyword: changedText}, this.handleSearchProducts);
   };
 
   renderFooter = () => {
@@ -615,11 +502,23 @@ export default class FarmFreshTab extends Component {
             {this.state.isProcessing && <ProcessingLoader />}
           </View>
         )}
-        {/* <FooterComponent nav={this.props.navigation} tab="Fresh" /> */}
       </SafeAreaView>
     );
   }
 }
+
+const mapDispatchToProps = {
+  getFarmVendorList: vendorsFreshOperations.getFarmVendorList,
+  followVendor: vendorsFreshOperations.followVendor,
+};
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isGetFarmVendorList: vendorsFreshSelectors.isGetFarmVendorList(state),
+  isFollowVendor: vendorsFreshSelectors.isFollowVendor(state),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(FarmFreshTab);
 
 const styles = StyleSheet.create({
   container: {

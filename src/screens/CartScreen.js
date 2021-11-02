@@ -47,7 +47,21 @@ import {KEYS, storeData, getData} from '../api/UserPreference';
 // API
 import {BASE_URL, makeRequest} from '../api/ApiInfo';
 
-export default class extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {homeSelectors, homeOperations} from 'state/ducks/home';
+import {cartSelectors, cartOperations} from 'state/ducks/cart';
+import {
+  cartCountSelectors,
+  cartCountOperations,
+} from 'state/ducks/cartItemCount';
+import {
+  vendorsFreshSelectors,
+  vendorsFreshOperations,
+} from 'state/ducks/vendorsFresh';
+
+class CartScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -204,10 +218,8 @@ export default class extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/cartCount',
-        params,
-      );
+      await this.props.getCartCount('Customers/cartCount', params);
+      const {isGetCartCount: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -215,7 +227,7 @@ export default class extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          // // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+          this.props.saveCartCount(cartItemCount);
 
           this.setState({
             cartItemCount,
@@ -469,7 +481,7 @@ export default class extends Component {
       return;
     } else {
       const info = {selectCouponCallback: this.selectCouponCallback};
-      this.props.navigation.push('PromoCode', {info});
+      this.props.navigation.navigate('PromoCode', {info});
     }
   };
 
@@ -683,6 +695,31 @@ export default class extends Component {
     );
   }
 }
+
+const mapDispatchToProps = {
+  getNotificationCount: homeOperations.getNotificationCount,
+  saveCartCount: cartCountOperations.saveCartCount,
+  getCartCount: cartOperations.getCartCount,
+  vendorProducts: vendorsFreshOperations.vendorProducts,
+  addToFavourite: vendorsFreshOperations.addToFavourite,
+  getProductDetail: vendorsFreshOperations.getProductDetail,
+  addToCart: cartOperations.addToCart,
+  deleteCart: cartOperations.deleteCart,
+};
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isGetNotificationCount: homeSelectors.isGetNotificationCount(state),
+  isGetCartCount: cartSelectors.isGetCartCount(state),
+  getCartItemCount: cartCountSelectors.getCartItemCount(state),
+  isVendorProducts: vendorsFreshSelectors.isVendorProducts(state),
+  isGetProductDetail: vendorsFreshSelectors.isGetProductDetail(state),
+  isAddToFavourite: vendorsFreshSelectors.isAddToFavourite(state),
+  isAddToCart: cartSelectors.isAddToCart(state),
+  isDeleteCart: cartSelectors.isDeleteCart(state),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CartScreen);
 
 const styles = StyleSheet.create({
   homeHeader: {

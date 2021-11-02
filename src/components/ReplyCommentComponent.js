@@ -9,14 +9,14 @@ import {
 // Images
 
 // VectorIcons
-import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 import basicStyles from '../styles/BasicStyles';
 import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
 import ic_show_more from '../assets/icons/ic_show_more.png';
 
 import {showToast} from '../components/CustomToast';
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+
 import {clearData} from '../api/UserPreference';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class AddCommentListComponent extends Component {
   constructor(props) {
@@ -45,8 +45,6 @@ export default class AddCommentListComponent extends Component {
         isMenuVisible: false,
       });
 
-      // const userInfo = await getData(KEYS.USER_INFO);
-
       const params = {
         commentId: '',
         replyId,
@@ -54,8 +52,8 @@ export default class AddCommentListComponent extends Component {
 
       // calling api
 
-      const response = await makeRequest(
-        BASE_URL + 'Customers/commentDelete',
+      const response = await makeNetworkRequest(
+        'Customers/commentDelete',
         params,
         true,
         false,
@@ -110,13 +108,8 @@ export default class AddCommentListComponent extends Component {
   };
 
   render() {
-    const {
-      reply,
-      replierName,
-      replierImage,
-      replierDate,
-      canDelete,
-    } = this.props.item;
+    const {reply, replierName, replierImage, replierDate, canDelete} =
+      this.props.item;
 
     return (
       <View style={styles.subComment}>

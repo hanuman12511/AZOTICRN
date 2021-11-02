@@ -46,17 +46,6 @@ import ProcessingLoader from '../components/ProcessingLoader';
 import {showToast} from '../components/CustomToast';
 // import uploadToken from '../firebase_api/UploadTokenAPI';
 
-// Redux
-import {connect} from 'react-redux';
-import {loaderSelectors} from 'state/ducks/loader';
-import {homeSelectors, homeOperations} from 'state/ducks/home';
-import {cartSelectors, cartOperations} from 'state/ducks/cart';
-import {
-  cartCountSelectors,
-  cartCountOperations,
-} from 'state/ducks/cartItemCount';
-import {postsSelectors, postsOperations} from 'state/ducks/posts';
-
 // UserPreference
 import {KEYS, storeData, getData} from '../api/UserPreference';
 
@@ -72,6 +61,17 @@ import {
 
 // References
 export let homeScreenFetchNotificationCount = null;
+
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {homeSelectors, homeOperations} from 'state/ducks/home';
+import {cartSelectors, cartOperations} from 'state/ducks/cart';
+import {
+  cartCountSelectors,
+  cartCountOperations,
+} from 'state/ducks/cartItemCount';
+import {postsSelectors, postsOperations} from 'state/ducks/posts';
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -251,7 +251,7 @@ class HomeScreen extends Component {
       // starting loader
       this.setState({isLoading: true});
 
-      await this.props.liveStories('Customers/liveStories', null, false, true);
+      await this.props.liveStories('Customers/liveStories', null, true, true);
 
       const {isLiveStories: response} = this.props;
 
@@ -333,13 +333,6 @@ class HomeScreen extends Component {
 
       const {isAddReaction: response} = this.props;
 
-      // calling api
-      // const response = await makeRequest(
-      //   BASE_URL + 'Customers/addReaction',
-      //   params,
-      //   true,
-      // );
-
       // Processing Response
       if (response) {
         const {success} = response;
@@ -419,16 +412,9 @@ class HomeScreen extends Component {
         comment,
       };
 
-      await this.props.commentPost('Customers/liveStories', params, true);
+      await this.props.commentPost('Customers/commentPost', params, true);
 
       const {isCommentPost: response} = this.props;
-
-      // calling api
-      // const response = await makeRequest(
-      //   BASE_URL + 'Customers/commentPost',
-      //   params,
-      //   true,
-      // );
 
       // Processing Response
       if (response) {
@@ -506,13 +492,6 @@ class HomeScreen extends Component {
       await this.props.reportOrBlock('Customers/reportOrBlock', params, true);
 
       const {isReportOrBlock: response} = this.props;
-
-      // calling api
-      // const response = await makeRequest(
-      //   BASE_URL + 'Customers/reportOrBlock',
-      //   params,
-      //   true,
-      // );
 
       // Processing Response
       if (response) {
@@ -789,7 +768,6 @@ const mapStateToProps = state => ({
   isAddReaction: postsSelectors.isAddReaction(state),
   isCommentPost: postsSelectors.isCommentPost(state),
   isReportOrBlock: postsSelectors.isReportOrBlock(state),
-  getCartItemCount: cartCountSelectors.getCartItemCount(state),
   getCartItemCount: cartCountSelectors.getCartItemCount(state),
 });
 

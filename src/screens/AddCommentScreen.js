@@ -44,7 +44,13 @@ import {clearData, getData, KEYS} from '../api/UserPreference';
 
 import {FacebookLoader} from 'react-native-easy-content-loader';
 
-export default class AddCommentScreen extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+
+import {postsSelectors, postsOperations} from 'state/ducks/posts';
+
+class AddCommentScreen extends Component {
   constructor(props) {
     super(props);
 
@@ -107,11 +113,8 @@ export default class AddCommentScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/viewComments',
-        params,
-        true,
-      );
+      await this.props.viewComments('Customers/viewComments', params, true);
+      const {isViewComments: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -209,13 +212,9 @@ export default class AddCommentScreen extends Component {
       };
 
       // calling api
+      await this.props.commentPost('Customers/commentPost', params, true);
 
-      const response = await makeRequest(
-        BASE_URL + 'Customers/commentPost',
-        params,
-        true,
-        // true,
-      );
+      const {isCommentPost: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -328,7 +327,7 @@ export default class AddCommentScreen extends Component {
     }
   };
 
-  handleComment = (comment) => {
+  handleComment = comment => {
     const {is_reply_or_comment} = this.state;
     if (is_reply_or_comment === 'reply' && comment === '') {
       this.setState({comment, buttonType: 'cancel'});
@@ -366,7 +365,7 @@ export default class AddCommentScreen extends Component {
     }
   };
 
-  handleProfilePopup = async (item) => {
+  handleProfilePopup = async item => {
     await this.setState({profileDate: item});
     this.setState({showFormPopup: true});
   };
@@ -449,9 +448,8 @@ export default class AddCommentScreen extends Component {
               </View>
             )}
           </View>
-          <View
-            // style={{marginTop: hp(-0.5)}}
-            style={[styles.messageContainer]}>
+
+          <View style={[styles.messageContainer]}>
             <Image
               source={{uri: userImage}}
               resizeMode="cover"
@@ -490,25 +488,6 @@ export default class AddCommentScreen extends Component {
         </KeyboardAwareScrollView>
         {this.state.isProcessing && <ProcessingLoader />}
 
-        {/* <BottomModal
-          visible={this.state.showQualityPopup}
-          onTouchOutside={() => this.setState({showQualityPopup: false})}
-          // modalStyle={{  }}
-        >
-          <ModalContent
-            style={{
-              // flex: 1,
-              // backgroundColor: 'fff',
-              minHeight: hp(30),
-            }}>
-            <View style={styles.popupContainer}>
-              <Text>Hello</Text>
-            </View>
-          </ModalContent>
-        </BottomModal> */}
-
-        {/* {showProductSizePickerPopup && this.productSizePickerPopup} */}
-
         {this.state.showFormPopup && (
           <CommentUserDetailScreen
             item={profileDate}
@@ -516,12 +495,25 @@ export default class AddCommentScreen extends Component {
             nav={this.props.navigation}
           />
         )}
-
-        {/* <FooterComponent nav={this.props.navigation} /> */}
       </SafeAreaView>
     );
   }
 }
+
+const mapDispatchToProps = {
+  commentPost: postsOperations.commentPost,
+  viewComments: postsOperations.viewComments,
+  reportOrBlock: postsOperations.reportOrBlock,
+};
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isCommentPost: postsSelectors.isCommentPost(state),
+  isReportOrBlock: postsSelectors.isReportOrBlock(state),
+  isViewComments: postsSelectors.isViewComments(state),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddCommentScreen);
 
 const styles = StyleSheet.create({
   separator: {},

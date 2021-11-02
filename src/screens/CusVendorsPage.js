@@ -43,7 +43,17 @@ import {KEYS, storeData, getData, clearData} from '../api/UserPreference';
 // API
 import {BASE_URL, makeRequest} from '../api/ApiInfo';
 
-export default class CusVendorsPage extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+
+import {postsSelectors, postsOperations} from 'state/ducks/posts';
+import {
+  vendorsFreshSelectors,
+  vendorsFreshOperations,
+} from 'state/ducks/vendorsFresh';
+
+class CusVendorsPage extends Component {
   constructor(props) {
     super(props);
     const item = props.navigation.getParam('item', null);
@@ -56,54 +66,39 @@ export default class CusVendorsPage extends Component {
       vendorAddress,
       vendorId,
       cartItemCount: 0,
-      tabView: {
-        index: initial,
-        routes: [
-          {key: 'Gallery', title: 'Gallery'},
-          {key: 'Menu', title: 'Menu'},
-        ],
-      },
+      tabActive: initial && initial === 1 ? 'Menu' : 'Gallery',
 
       liveStories: null,
     };
-
-    // configuring TabView
-    const window = Dimensions.get('window');
-    const {width} = window;
-    this.initialLayout = {width};
-
-    // SceneMap routes
-    const {navigation} = this.props;
-
-    const GalleryRoute = () => (
-      <GalleryTab
-        navigation={navigation}
-        handleTabChange={this.handleTabIndexChange}
-        vendorId={vendorId}
-        fetchCartCount={this.fetchCartCount}
-      />
-    );
-
-    const MenuRoute = () => (
-      <MenuTab
-        navigation={navigation}
-        handleTabChange={this.handleTabIndexChange}
-        vendorId={vendorId}
-        activeStatus={activeStatus}
-        productId={productId}
-        fetchCartItemCount={this.fetchCartItemCount}
-      />
-    );
-
-    this.sceneMap = SceneMap({
-      Gallery: GalleryRoute,
-      Menu: MenuRoute,
-    });
   }
 
+  renderSlots = () => {
+    const {tabActive} = this.state;
+    const {navigation} = this.props;
+    const {vendorId, activeStatus, productId} = this.item;
+    if (tabActive === 'Gallery') {
+      return (
+        <GalleryTab
+          navigation={navigation}
+          handleTabChange={this.handleTabIndexChange}
+          vendorId={vendorId}
+        />
+      );
+    } else if (tabActive === 'Menu') {
+      return (
+        <MenuTab
+          navigation={navigation}
+          handleTabChange={this.handleTabIndexChange}
+          vendorId={vendorId}
+          activeStatus={activeStatus}
+          productId={productId}
+        />
+      );
+    }
+  };
+
   componentDidMount() {
-    this.fetchCartItemCount();
-    this.fetchStories();
+    // this.fetchStories();
     this.backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       this.backAction,
@@ -136,11 +131,9 @@ export default class CusVendorsPage extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/liveStories',
-        params,
-        true,
-      );
+      await this.props.liveStories('Customers/liveStories', null, true, true);
+
+      const {isLiveStories: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -173,60 +166,6 @@ export default class CusVendorsPage extends Component {
               },
             );
           }
-        }
-      } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
-        });
-        showToast('Network Request Error...');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  fetchCartItemCount = async msg => {
-    try {
-      const refreshCallback = await this.props.navigation.getParam(
-        'refreshCallback',
-        null,
-      );
-
-      refreshCallback();
-
-      // starting loader
-      this.setState({isLoading: true});
-
-      const deviceInfo = await getData(KEYS.DEVICE_UNIQUE_ID);
-
-      if (!deviceInfo) {
-        return;
-      }
-
-      const {deviceId} = deviceInfo;
-
-      const params = {
-        deviceId,
-      };
-
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/cartCount',
-        params,
-      );
-
-      // Processing Response
-      if (response) {
-        const {success} = response;
-
-        if (success) {
-          const {cartCount: cartItemCount} = response;
-          // // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
-
-          this.setState({
-            cartItemCount,
-          });
         }
       } else {
         this.setState({
@@ -282,13 +221,12 @@ export default class CusVendorsPage extends Component {
         vendorId,
         follow: followStatus,
       };
-      console.log(params);
+
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/followVendor',
-        params,
-        true,
-      );
+      await this.props.followVendor('Customers/followVendor', null, true, true);
+
+      const {isFollowVendor: response} = this.props;
+
       // Processing Response
       if (response) {
         const {success, message} = response;
@@ -366,11 +304,9 @@ export default class CusVendorsPage extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/addReaction',
-        params,
-        true,
-      );
+      await this.props.addReaction('Customers/addReaction', params, true);
+
+      const {isAddReaction: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -451,12 +387,9 @@ export default class CusVendorsPage extends Component {
         comment,
       };
 
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/commentPost',
-        params,
-        true,
-      );
+      await this.props.commentPost('Customers/commentPost', params, true);
+
+      const {isCommentPost: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -531,12 +464,9 @@ export default class CusVendorsPage extends Component {
         reasion: reason,
       };
 
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/reportOrBlock',
-        params,
-        true,
-      );
+      await this.props.reportOrBlock('Customers/reportOrBlock', params, true);
+
+      const {isReportOrBlock: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -579,20 +509,22 @@ export default class CusVendorsPage extends Component {
     }
   };
 
-  renderTabBar = props => (
-    <TabBar
-      {...props}
-      indicatorStyle={styles.tabBarIndicator}
-      labelStyle={styles.tabBarLabel}
-      style={styles.tabBarStyle}
-      activeColor={'#333'}
-      inactiveColor="#999"
-    />
-  );
+  handleGallery = () => {
+    this.setState({tabActive: 'Gallery'});
+  };
+  handleMenu = () => {
+    this.setState({tabActive: 'Menu'});
+  };
 
   render() {
-    const {sceneMap, handleTabIndexChange, initialLayout} = this;
-    const {tabView, cartItemCount, followStatus, liveStories} = this.state;
+    const {cartItemCount, followStatus, liveStories} = this.state;
+
+    const {tabActive} = this.state;
+    const activeStyle = [
+      styles.tabStyle,
+      {borderColor: '#F57C00', borderBottomWidth: 2.5, backgroundColor: '#fff'},
+    ];
+    const activeTextStyle = [basicStyles.textBold, {color: '#333'}];
 
     const {
       vendorName,
@@ -663,9 +595,7 @@ export default class CusVendorsPage extends Component {
                       />
                     </TouchableOpacity>
                   )}
-                  {/* <TouchableOpacity style={styles.editImage}>
-                              <Material size={14} name={'pencil'} color="#fff" />
-                            </TouchableOpacity> */}
+
                   <Text style={[styles.profileNameStyle]}>{vendorName}</Text>
 
                   <Text
@@ -734,21 +664,61 @@ export default class CusVendorsPage extends Component {
                 </View>
               </View>
             )}>
-            <View style={{borderTopWidth: 0.5, borderColor: '#9997'}}>
-              <TabView
-                initialLayout={initialLayout}
-                navigationState={tabView}
-                renderScene={sceneMap}
-                onIndexChange={handleTabIndexChange}
-                renderTabBar={this.renderTabBar}
-              />
+            <View style={styles.tabContainer}>
+              <TouchableOpacity
+                onPress={this.handleGallery}
+                style={tabActive === 'Gallery' ? activeStyle : styles.tabStyle}>
+                <Text
+                  style={
+                    tabActive === 'Gallery'
+                      ? activeTextStyle
+                      : [basicStyles.textBold, {color: '#999'}]
+                  }>
+                  {' '}
+                  Gallery{' '}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.handleMenu}
+                style={tabActive === 'Menu' ? activeStyle : styles.tabStyle}>
+                <Text
+                  style={
+                    tabActive === 'Menu'
+                      ? activeTextStyle
+                      : [basicStyles.textBold, {color: '#999'}]
+                  }>
+                  {' '}
+                  Menu{' '}
+                </Text>
+              </TouchableOpacity>
             </View>
+            {this.renderSlots()}
           </ParallaxScrollView>
         </View>
       </SafeAreaView>
     );
   }
 }
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+
+  isLiveStories: postsSelectors.isLiveStories(state),
+  isAddReaction: postsSelectors.isAddReaction(state),
+  isCommentPost: postsSelectors.isCommentPost(state),
+  isReportOrBlock: postsSelectors.isReportOrBlock(state),
+  isFollowVendor: vendorsFreshSelectors.isFollowVendor(state),
+});
+
+const mapDispatchToProps = {
+  liveStories: postsOperations.liveStories,
+  addReaction: postsOperations.addReaction,
+  commentPost: postsOperations.commentPost,
+  reportOrBlock: postsOperations.reportOrBlock,
+  followVendor: vendorsFreshOperations.followVendor,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CusVendorsPage);
 
 const styles = StyleSheet.create({
   container: {
@@ -839,31 +809,7 @@ const styles = StyleSheet.create({
     fontSize: wp(4.2),
     marginLeft: wp(2),
   },
-  tabBarIndicator: {
-    backgroundColor: '#F57C00',
-    borderRadius: hp(3),
-  },
-  tabBarStyle: {
-    backgroundColor: 'transparent',
-    // height: hp(6),
-    // borderRadius: hp(3),
-    // margin: wp(2),
-    width: wp(100),
-  },
-  tabBarLabel: {
-    // color: '#999',
-    fontSize: wp(4),
-    textTransform: 'capitalize',
-    textAlignVertical: 'center',
-    // marginTop: hp(-1),
-    fontWeight: '700',
-  },
 
-  tabContainer: {
-    backgroundColor: '#fff',
-    // paddingTop: hp(3),
-    // borderRadius: hp(4),
-  },
   profileContainer: {
     flexDirection: 'column',
     marginTop: hp(-8.05),
@@ -916,5 +862,23 @@ const styles = StyleSheet.create({
   detailTile: {
     paddingHorizontal: wp(4),
     alignItems: 'center',
+  },
+  tabStyle: {
+    flex: 1,
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderTopWidth: 0.5,
+    borderTopColor: '#ccc',
+  },
+
+  tabContainer: {
+    backgroundColor: '#f2f1f1',
+    elevation: 6,
+    flexDirection: 'row',
+    height: hp(6.5),
+    alignItems: 'center',
+    marginBottom: wp(-1.2),
   },
 });

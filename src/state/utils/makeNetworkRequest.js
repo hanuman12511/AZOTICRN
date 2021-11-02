@@ -5,12 +5,12 @@ import axios from 'axios';
 import {encryptData} from './EncryptionUtility';
 
 // User Preference
-import {getData} from './UserPreference';
+import {KEYS, getData} from './UserPreference';
 
 // Base URL
 // export const BASE_URL = 'https://templatelaboratory.com/api/'; /* Local URL */
 // export const BASE_URL = 'https://www.agzotic.com/api/'; //     /* Live URL */
-export const BASE_URL = 'https://admin.agzotic.com/api/'; //     /* Live URL */
+export const BASE_URL = 'https://app.agzotic.com/api/'; //     /* Live URL */
 
 const AXIOS = axios.create({
   baseURL: BASE_URL,
@@ -27,6 +27,8 @@ export const makeNetworkRequest = async (
   sendAuthorizationToken = false,
   isContentTypeJSON = false,
 ) => {
+  // console.log(url, params, sendAuthorizationToken, isContentTypeJSON);
+
   try {
     // request info
     let info = {};
@@ -37,7 +39,9 @@ export const makeNetworkRequest = async (
 
       if (sendAuthorizationToken) {
         // fetching userInfo
-        const userInfo = await getData();
+        const userInfo = await getData(KEYS.USER_INFO);
+
+        console.log(userInfo);
 
         if (!userInfo) {
           return null;
@@ -80,7 +84,7 @@ export const makeNetworkRequest = async (
     } else {
       if (sendAuthorizationToken) {
         // fetching userInfo
-        const userInfo = await getData();
+        const userInfo = await getData(KEYS.USER_INFO);
         if (!userInfo) {
           // console.log('Unable to fetch user info');
           return null;
@@ -105,11 +109,11 @@ export const makeNetworkRequest = async (
     }
 
     const response = await AXIOS.request(info);
+    console.log('Request Result:', response);
     // console.log('Request URLll:', BASE_URL + url);
     // console.log('Request Info:', info);
 
     const result = response.data;
-    // console.log('Request Result:', result);
 
     return result;
   } catch (error) {

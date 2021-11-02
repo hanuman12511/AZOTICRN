@@ -41,7 +41,7 @@ export default class CouponScreen extends Component {
       isLoading: true,
       isProcessing: false,
       coupons: null,
-      status: null,
+      status: 'No Coupons Available',
       selectedRadioButtonIndex: -1,
       promoCode: '',
       promoCodeId: null,
@@ -94,7 +94,7 @@ export default class CouponScreen extends Component {
           this.setState({coupons, status: null});
         } else {
           const {message: status} = response;
-          this.setState({status, coupons: null, isLoading: false});
+          this.setState({coupons: null, isLoading: false});
         }
       }
     } catch (error) {
@@ -102,7 +102,7 @@ export default class CouponScreen extends Component {
     }
   };
 
-  handlePromoCodeChange = (promoCode) => {
+  handlePromoCodeChange = promoCode => {
     this.setState({promoCode});
   };
 
@@ -143,7 +143,7 @@ export default class CouponScreen extends Component {
     });
   };
 
-  handleRadioButtonPress = (selectedRadioButtonIndex) => {
+  handleRadioButtonPress = selectedRadioButtonIndex => {
     const {coupons} = this.state;
     const promoCode = coupons[selectedRadioButtonIndex].code;
     const promoCodeId = coupons[selectedRadioButtonIndex].id;
@@ -209,7 +209,7 @@ export default class CouponScreen extends Component {
               onPress={this.handleApplyCode}
               underlayColor="#F57C0080"
               style={styles.applyButton}>
-              <Text style={styles.applyButtonText}>Confirm</Text>
+              <Text style={styles.applyButtonText}>Select</Text>
             </TouchableOpacity>
           </View>
 

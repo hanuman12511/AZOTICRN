@@ -26,9 +26,6 @@ import RadioForm from 'react-native-simple-radio-button';
 import LiveTabComponent from '../../components/LiveTabComponent';
 import LiveTabAgroComponent from '../../components/LiveTabAgroComponent';
 import {showToast} from '../../components/CustomToast';
-import HeaderComponent from '../../components/HeaderComponent';
-import FooterComponent from '../../components/FooterComponent';
-import Stories from '../Stories';
 
 // Styles
 import basicStyles from '../../styles/BasicStyles';
@@ -46,12 +43,17 @@ import ic_alphabetical_order2 from '../../assets/icons/ic_alphabetical_order2.pn
 import about_to_end from '../../assets/icons/about_to_end.png';
 
 // UserPreference
-import {KEYS, storeData, getData} from '../../api/UserPreference';
+import {KEYS, getData} from '../../api/UserPreference';
 
-// API
-import {BASE_URL, makeRequest} from '../../api/ApiInfo';
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {
+  vendorsFreshSelectors,
+  vendorsFreshOperations,
+} from 'state/ducks/vendorsFresh';
 
-export default class LiveTab extends Component {
+class LiveTab extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -78,48 +80,7 @@ export default class LiveTab extends Component {
   componentDidMount() {
     this.fetchFoodProducts();
     this.fetchAgroProducts();
-    this.fetchCartCount();
-    this.fetchNotificationCount();
-    this.props.fetchStories();
   }
-
-  fetchNotificationCount = async () => {
-    try {
-      // fetching userInfo
-      const userInfo = await getData(KEYS.USER_INFO);
-
-      if (userInfo) {
-        const {payloadId} = userInfo;
-
-        // preparing params
-        const params = {
-          payloadId,
-        };
-        // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Notifications/getNotificationCount',
-          params,
-          true,
-        );
-
-        // processing response
-        if (response) {
-          const {success} = response;
-
-          if (success) {
-            const {notificationCount} = response;
-            await storeData(KEYS.NOTIFICATION_COUNT, {notificationCount});
-            this.setState({
-              notificationCount,
-              isLoading: false,
-            });
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   renderSortLayout = (disabled, selected, showModal) => {
     const {selectedSortValue} = this.state;
@@ -182,27 +143,19 @@ export default class LiveTab extends Component {
         sortingValue: selectedSortValue,
         deviceId,
       };
-      let response = null;
 
-      if (!userInfo) {
-        response = await makeRequest(
-          BASE_URL + 'Customers/liveProducts',
-          params,
-        );
-      } else if (userInfo) {
+      if (userInfo) {
         const {payloadId} = userInfo;
         params = {
           payloadId,
           sortingValue: selectedSortValue,
           deviceId,
         };
-        response = await makeRequest(
-          BASE_URL + 'Customers/liveProducts',
-          params,
-        );
       }
 
       // calling api
+      await this.props.liveProducts('Customers/liveProducts', params);
+      const {isLiveProducts: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -264,23 +217,18 @@ export default class LiveTab extends Component {
         sortingValue: selectedSortValue,
       };
 
-      // calling api
-      let response = null;
-      if (!userInfo) {
-        response = await makeRequest(BASE_URL + 'Customers/liveFarmProducts');
-      } else if (userInfo) {
+      if (userInfo) {
         const {payloadId} = userInfo;
 
         params = {
           payloadId,
           sortingValue: selectedSortValue,
         };
-
-        response = await makeRequest(
-          BASE_URL + 'Customers/liveFarmProducts',
-          params,
-        );
       }
+
+      // Calling API
+      await this.props.liveFarmProducts('Customers/liveFarmProducts', params);
+      const {isLiveFarmProducts: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -323,13 +271,6 @@ export default class LiveTab extends Component {
 
   handleSearchProducts = async () => {
     const {keyword, type: searchType} = this.state;
-    // let searchType = '';
-
-    // if (!sType) {
-    //   searchType = srType;
-    // } else if (sType) {
-    //   searchType = sType;
-    // }
 
     try {
       // starting loader
@@ -357,10 +298,9 @@ export default class LiveTab extends Component {
         type: searchType,
       };
 
-      let response = await makeRequest(
-        BASE_URL + 'Customers/searchProduct',
-        params,
-      );
+      // Calling API
+      await this.props.searchProducts('Customers/searchProduct', params);
+      const {isSearchProducts: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -411,53 +351,6 @@ export default class LiveTab extends Component {
           isProcessing: false,
           isLoading: false,
           isListRefreshing: false,
-        });
-        showToast('Network Request Error...');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  fetchCartCount = async () => {
-    try {
-      // starting loader
-      this.setState({isLoading: true});
-
-      const deviceInfo = await getData(KEYS.DEVICE_UNIQUE_ID);
-
-      if (!deviceInfo) {
-        return;
-      }
-
-      const {deviceId} = deviceInfo;
-
-      const params = {
-        deviceId,
-      };
-
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/cartCount',
-        params,
-      );
-
-      // Processing Response
-      if (response) {
-        const {success} = response;
-
-        if (success) {
-          const {cartCount: cartItemCount} = response;
-          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
-
-          this.setState({
-            cartItemCount,
-          });
-        }
-      } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
         });
         showToast('Network Request Error...');
       }
@@ -735,6 +628,21 @@ export default class LiveTab extends Component {
     );
   }
 }
+
+const mapDispatchToProps = {
+  liveProducts: vendorsFreshOperations.liveProducts,
+  liveFarmProducts: vendorsFreshOperations.liveFarmProducts,
+  searchProducts: vendorsFreshOperations.searchProducts,
+};
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isLiveProducts: vendorsFreshSelectors.isLiveProducts(state),
+  isLiveFarmProducts: vendorsFreshSelectors.isLiveFarmProducts(state),
+  isSearchProducts: vendorsFreshSelectors.isSearchProducts(state),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LiveTab);
 
 const styles = StyleSheet.create({
   sortIcon: {

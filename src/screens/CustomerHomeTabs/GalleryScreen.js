@@ -31,7 +31,15 @@ import {BASE_URL, makeRequest} from '../../api/ApiInfo';
 
 import {InstagramLoader} from 'react-native-easy-content-loader';
 
-export default class GalleryScreen extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {
+  vendorsFreshSelectors,
+  vendorsFreshOperations,
+} from 'state/ducks/vendorsFresh';
+
+class GalleryScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -64,15 +72,7 @@ export default class GalleryScreen extends Component {
         offset,
       };
 
-      let response = null;
-
-      if (!userInfo) {
-        // calling api
-        response = await makeRequest(
-          BASE_URL + 'Customers/vendorGalleryListing',
-          params,
-        );
-      } else if (userInfo) {
+      if (userInfo) {
         const {payloadId} = userInfo;
 
         params = {
@@ -80,13 +80,14 @@ export default class GalleryScreen extends Component {
           vendorId,
           offset,
         };
-
-        // calling api
-        response = await makeRequest(
-          BASE_URL + 'Customers/vendorGalleryListing',
-          params,
-        );
       }
+
+      // Calling API
+      await this.props.vendorGalleryListing(
+        'Customers/vendorGalleryListing',
+        params,
+      );
+      const {isVendorGalleryListing: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -144,74 +145,13 @@ export default class GalleryScreen extends Component {
     }
   };
 
-  handleLikeUnlike = async (likeStatus, postId) => {
-    try {
-      // starting loader
-      // this.setState({isProcessing: true});
-
-      const params = {
-        postId,
-        like: likeStatus,
-      };
-
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/likePost',
-        params,
-        true,
-      );
-
-      // Processing Response
-      if (response) {
-        const {success, message} = response;
-
-        // this.setState({
-        //   isProcessing: false,
-        // });
-
-        if (success) {
-          const {follow} = response;
-
-          this.fetchGallery();
-        }
-      } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
-        });
-
-        const {isAuthTokenExpired} = response;
-
-        if (isAuthTokenExpired === true) {
-          Alert.alert(
-            'Session Expired',
-            'Login Again to Continue!',
-            [{text: 'OK', onPress: this.handleTokenExpire}],
-            {
-              cancelable: false,
-            },
-          );
-          return;
-        }
-
-        showToast('Network Request Error...');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   handleTokenExpire = async () => {
     await clearData();
     this.props.navigation.navigate('Login');
   };
 
   renderItem = ({item}) => (
-    <GalleryTabComponent
-      item={item}
-      nav={this.props.navigation}
-      handleLikeUnlike={this.handleLikeUnlike}
-    />
+    <GalleryTabComponent item={item} nav={this.props.navigation} />
   );
 
   keyExtractor = (item, index) => index.toString();
@@ -221,10 +161,7 @@ export default class GalleryScreen extends Component {
   handleListRefresh = async () => {
     try {
       // pull-to-refresh
-      this.setState({isListRefreshing: true});
-
-      // updating list
-      await this.componentDidMount();
+      this.setState({isListRefreshing: true}, this.componentDidMount);
     } catch (error) {
       console.log(error.message);
     }
@@ -300,6 +237,17 @@ export default class GalleryScreen extends Component {
     );
   }
 }
+
+const mapDispatchToProps = {
+  vendorGalleryListing: vendorsFreshOperations.vendorGalleryListing,
+};
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isVendorGalleryListing: vendorsFreshSelectors.isVendorGalleryListing(state),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(GalleryScreen);
 
 const styles = StyleSheet.create({
   flatContainer: {

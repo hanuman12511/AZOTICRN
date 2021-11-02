@@ -22,9 +22,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 // Style
 import basicStyles from '../styles/BasicStyles';
 
-// UserPreference
-import {KEYS, getData} from '../api/UserPreference';
-
 export default class NewsFeedComponent extends Component {
   constructor(props) {
     super(props);
@@ -35,94 +32,8 @@ export default class NewsFeedComponent extends Component {
     };
   }
 
-  handleLike = async () => {
-    const {handleLikeUnlike} = this.props;
-    let {likeStatus} = this.state;
-    const {postId} = this.props.item;
-
-    const userInfo = await getData(KEYS.USER_INFO);
-
-    if (!userInfo) {
-      Alert.alert(
-        'Alert!',
-        'You Need To Login?',
-        [
-          {text: 'Cancel', style: 'cancel'},
-          {text: 'Login', onPress: this.onLoginPress},
-        ],
-        {
-          cancelable: false,
-        },
-      );
-      return;
-    }
-
-    this.setState({isLike: true});
-
-    await handleLikeUnlike(likeStatus, postId);
-
-    this.setState({isLike: false});
-
-    if (likeStatus === true) {
-      this.setState({likeStatus: false});
-      likeStatus = false;
-    } else if (likeStatus === false) {
-      this.setState({likeStatus: true});
-      likeStatus = true;
-    }
-  };
-
-  handleVendorPage = () => {
-    const {item} = this.props;
-    this.props.nav.push('CuVendors', {item});
-  };
-
-  handelCommentScreen = async () => {
-    const userInfo = await getData(KEYS.USER_INFO);
-    if (!userInfo) {
-      Alert.alert(
-        'Alert!',
-        'You Need To Login?',
-        [
-          {text: 'Cancel', style: 'cancel'},
-          {text: 'Login', onPress: this.onLoginPress},
-        ],
-        {
-          cancelable: false,
-        },
-      );
-      return;
-    } else {
-      const {postId} = this.props.item;
-      this.props.nav.navigate('Comment', {postId});
-    }
-  };
-
   onLoginPress = () => {
     this.props.nav.navigate('Register');
-  };
-
-  handleDoubleTap = async () => {
-    const userInfo = await getData(KEYS.USER_INFO);
-    if (this.state.likeStatus === true) {
-      return;
-    }
-    if (!userInfo) {
-      Alert.alert(
-        'Alert!',
-        'You Need To Login?',
-        [
-          {text: 'Cancel', style: 'cancel'},
-          {text: 'Login', onPress: this.onLoginPress},
-        ],
-        {
-          cancelable: false,
-        },
-      );
-      return;
-    }
-
-    await this.handleLike();
   };
 
   handleGalleryDetail = () => {

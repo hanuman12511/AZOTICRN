@@ -6,7 +6,7 @@ import {KEYS, getData} from './UserPreference';
 // Base URL
 // export const BASE_URL = 'https://templatelaboratory.com/api/';      /* Local URL */
 // export const BASE_URL = 'https://www.agzotic.com/api/'; //     /* Live URL */
-export const BASE_URL = 'https://admin.agzotic.com/api/'; //     /* Live URL */
+export const BASE_URL = 'https://app.agzotic.com/api/'; //     /* Live URL */
 
 // Methods
 export const makeRequest = async (

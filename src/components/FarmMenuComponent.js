@@ -28,6 +28,7 @@ import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // Style
 import basicStyles from '../styles/BasicStyles';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 export default class FarmMenuComponent extends Component {
   constructor(props) {
@@ -84,6 +85,23 @@ export default class FarmMenuComponent extends Component {
   };
 
   handleAddToFav = async () => {
+    const userInfo = await getData(KEYS.USER_INFO);
+
+    if (!userInfo) {
+      Alert.alert(
+        'Alert!',
+        'You Need To Login?',
+        [
+          {text: 'Cancel', style: 'cancel'},
+          {text: 'Login', onPress: this.onLoginPress},
+        ],
+        {
+          cancelable: false,
+        },
+      );
+      return;
+    }
+
     const {addFavStatus} = this.state;
     const {productId} = this.props.item;
     const {handleAddToFavs} = this.props;

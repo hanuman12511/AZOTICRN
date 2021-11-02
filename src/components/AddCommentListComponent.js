@@ -14,7 +14,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import CommentUserDetailScreen from '../screens/CustomerHomeTabs/CommentUserDetailScreen';
 import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
 import ReplyCommentComponent from './ReplyCommentComponent';
 
@@ -22,10 +21,11 @@ import ReplyCommentComponent from './ReplyCommentComponent';
 import ic_show_more from '../assets/icons/ic_show_more.png';
 
 // VectorIcons
-import Material from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import basicStyles from '../styles/BasicStyles';
 import {showToast} from './CustomToast';
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class AddCommentListComponent extends Component {
   constructor(props) {
@@ -70,8 +70,8 @@ export default class AddCommentListComponent extends Component {
 
       // calling api
 
-      const response = await makeRequest(
-        BASE_URL + 'Customers/commentDelete',
+      const response = await makeNetworkRequest(
+        'Customers/commentDelete',
         params,
         true,
         false,
@@ -120,59 +120,6 @@ export default class AddCommentListComponent extends Component {
     }
   };
 
-  // renderItem = ({item}) => {
-  //   const {reply, replierName, replierImage, replierDate} = item;
-  //   return (
-  //     <View style={styles.subComment}>
-  //       <View
-  //         style={[
-  //           basicStyles.padding,
-  //           styles.notificationContainer,
-  //           basicStyles.directionRow,
-  //           basicStyles.alignStart,
-  //         ]}>
-  //         <Image
-  //           source={{uri: replierImage}}
-  //           resizeMode="cover"
-  //           style={styles.userImg2}
-  //         />
-
-  //         <View style={[basicStyles.flexOne]}>
-  //           <View>
-  //             <View
-  //               style={[
-  //                 basicStyles.directionRow,
-  //                 basicStyles.alignCenter,
-  //                 basicStyles.justifyBetween,
-  //               ]}>
-  //               <TouchableOpacity onPress={this.handleQualityPopup}>
-  //                 <Text style={[styles.userNameStyle]}>{replierName}</Text>
-  //               </TouchableOpacity>
-  //               <View
-  //                 style={[basicStyles.directionRow, basicStyles.alignCenter]}>
-  //                 <Text style={[styles.notificationDate]}>{replierDate}</Text>
-  //               </View>
-  //             </View>
-
-  //             <Text style={styles.notificationDescription}>{reply}</Text>
-  //           </View>
-
-  //           <View
-  //             style={[
-  //               basicStyles.directionRow,
-  //               basicStyles.justifyBetween,
-  //               // basicStyles.marginTopHalf,
-  //             ]}>
-  //             <View
-  //               style={[basicStyles.directionRow, basicStyles.alignCenter]}
-  //             />
-  //           </View>
-  //         </View>
-  //       </View>
-  //     </View>
-  //   );
-  // };
-
   renderItem = ({item}) => (
     <ReplyCommentComponent
       item={item}
@@ -190,46 +137,21 @@ export default class AddCommentListComponent extends Component {
 
   itemSeparator = () => <View style={styles.separator} />;
 
-  // handleQualityPopup = () => {
-  //   const {quantity} = this.state;
-  //   const {productId, productLeft} = this.props.item;
-  //   this.props.handleQualityPopup(productId, quantity);
-  // };
-
   handleShowSubCategory = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       showReplyComments: !prevState.showReplyComments,
     }));
   };
 
-  // handleTest = () => {
-  //   this.props.nav.navigate('CommentUserDetail');
-  // };
-
   handleShowProfileData = () => {
     const {item} = this.props;
-
-    // const popup = (
-    //   <CommentUserDetailScreen
-    //     currentProduct={item}
-    //     handlePopupShow={this.props.handlePopupShow}
-    //     productSizeChangeCallback={this.productSizeChangeCallback}
-    //   />
-    // );
 
     this.props.handlePopupShow(item);
   };
 
   render() {
-    const {
-      userImage,
-      userName,
-      comment,
-      replyCount,
-      date,
-      reply,
-      canDelete,
-    } = this.props.item;
+    const {userImage, userName, comment, replyCount, date, reply, canDelete} =
+      this.props.item;
     const {showReplyComments} = this.state;
     return (
       <View style={{position: 'relative'}}>
@@ -250,15 +172,7 @@ export default class AddCommentListComponent extends Component {
           </TouchableOpacity>
 
           <View style={[basicStyles.flexOne]}>
-            <TouchableOpacity
-              onPress={this.handleShowSubCategory}
-              style={
-                [
-                  // basicStyles.directionRow,
-                  // basicStyles.alignCenter,
-                  // basicStyles.justifyEnd,
-                ]
-              }>
+            <TouchableOpacity onPress={this.handleShowSubCategory}>
               <View
                 style={[basicStyles.directionRow, basicStyles.justifyBetween]}>
                 <Text style={[styles.userNameStyle]}>{userName}</Text>
@@ -304,20 +218,6 @@ export default class AddCommentListComponent extends Component {
                 basicStyles.marginTopHalf,
               ]}>
               <View style={basicStyles.directionRow}>
-                {/* <TouchableOpacity style={[basicStyles.marginRight]}>
-                  <Image
-                    source={ic_edit_black}
-                    resizeMode="cover"
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity style={[basicStyles.marginRight]}>
-                  <Image
-                    source={ic_delete_black}
-                    resizeMode="cover"
-                    style={styles.icon}
-                  />
-                </TouchableOpacity> */}
                 <TouchableOpacity
                   style={[
                     basicStyles.directionRow,

@@ -3,6 +3,7 @@ import {encryptData, decryptData} from './EncryptionUtility';
 
 // User Preferences Keys
 export const KEYS = {
+  USER_INFO: 'userInfo',
   NOTIFICATION_COUNT: 'notificationCount',
   DEVICE_UNIQUE_ID: 'deviceUniqueId',
   CURRENT_LOCATION: 'formattedAddress',

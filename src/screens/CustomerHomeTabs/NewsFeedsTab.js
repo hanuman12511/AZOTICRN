@@ -20,14 +20,8 @@ import RNFetchBlob from 'rn-fetch-blob';
 import Modal from 'react-native-modalbox';
 // Components
 import NewsFeedsComponent from '../../components/NewsFeedsComponent';
-import NewsFeedsComponentDemo from '../../components/NewsFeedsComponentDemo';
-import CustomLoader from '../../components/CustomLoader';
-// import HeaderComponent from '../../components/HeaderComponent';
-// import FooterComponent from '../../components/FooterComponent';
 import ProcessingLoader from '../../components/ProcessingLoader';
 import {showToast} from '../../components/CustomToast';
-// import uploadToken from '../../firebase_api/UploadTokenAPI';
-import Stories from '../Stories';
 
 // Styles
 import basicStyles from '../../styles/BasicStyles';
@@ -43,12 +37,6 @@ import {BASE_URL, makeRequest} from '../../api/ApiInfo';
 // Redux
 import {connect} from 'react-redux';
 import {loaderSelectors} from 'state/ducks/loader';
-import {homeSelectors, homeOperations} from 'state/ducks/home';
-import {cartSelectors, cartOperations} from 'state/ducks/cart';
-import {
-  cartCountSelectors,
-  cartCountOperations,
-} from 'state/ducks/cartItemCount';
 import {postsSelectors, postsOperations} from 'state/ducks/posts';
 
 class NewsFeeds extends Component {
@@ -74,11 +62,8 @@ class NewsFeeds extends Component {
   }
 
   componentDidMount = async () => {
-    // this.fetchCartCount();
     this.fetchNewsFeeds();
     this.fetchNotificationCount();
-    // this.props.fetchStories();
-    // await uploadToken();
   };
 
   fetchNewsFeeds = async () => {
@@ -115,11 +100,6 @@ class NewsFeeds extends Component {
       await this.props.newsFeed('Customers/newsFeed', params);
 
       const {isNewsFeed: response} = this.props;
-
-      // const response = await makeRequest(
-      //   BASE_URL + 'Customers/newsFeed',
-      //   params,
-      // );
 
       // Processing Response
       if (response) {
@@ -194,53 +174,6 @@ class NewsFeeds extends Component {
     this.props.navigation.navigate('Login');
   };
 
-  fetchCartCount = async () => {
-    try {
-      // starting loader
-      // this.setState({isLoading: true});
-
-      const deviceInfo = await getData(KEYS.DEVICE_UNIQUE_ID);
-
-      if (!deviceInfo) {
-        return;
-      }
-
-      const {deviceId} = deviceInfo;
-
-      const params = {
-        deviceId,
-      };
-
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/cartCount',
-        params,
-      );
-
-      // Processing Response
-      if (response) {
-        const {success} = response;
-
-        if (success) {
-          const {cartCount: cartItemCount} = response;
-          // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
-
-          this.setState({
-            cartItemCount,
-          });
-        }
-      } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
-        });
-        showToast('Network Request Error...');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   handleLikeUnlike = async (likeStatus, postId) => {
     try {
       // starting loader
@@ -251,12 +184,9 @@ class NewsFeeds extends Component {
         like: likeStatus,
       };
 
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/likePost',
-        params,
-        true,
-      );
+      await this.props.likePost('Customers/likePost', params, true);
+
+      const {isLikePost: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -302,91 +232,6 @@ class NewsFeeds extends Component {
     this.props.navigation.navigate('Register');
   };
 
-  handlePostComment = async (comment, postId) => {
-    // Checking Login
-
-    const userInfo = await getData(KEYS.USER_INFO);
-
-    if (!userInfo) {
-      Alert.alert(
-        'Alert!',
-        'You Need To Login?',
-        [
-          {text: 'Cancel', style: 'cancel'},
-          {text: 'Login', onPress: this.onLoginPress},
-        ],
-        {
-          cancelable: false,
-        },
-      );
-      return;
-    }
-
-    // validations
-    if (comment.trim() === '') {
-      Alert.alert('Reply!', 'Message cannot be blank!', [{text: 'OK'}], {
-        cancelable: false,
-      });
-      return;
-    }
-
-    try {
-      // starting loader
-      this.setState({isProcessing: true, contentLoading: true});
-
-      const params = {
-        postId,
-        comment,
-      };
-
-      // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/commentPost',
-        params,
-        true,
-      );
-
-      // Processing Response
-      if (response) {
-        const {success} = response;
-
-        this.setState({
-          contentLoading: false,
-          isProcessing: false,
-        });
-
-        if (success) {
-          const {message} = response;
-
-          showToast(message);
-        } else {
-          const {message, isAuthTokenExpired} = response;
-
-          if (isAuthTokenExpired === true) {
-            Alert.alert(
-              'Session Expired',
-              'Login Again to Continue!',
-              [{text: 'OK', onPress: this.handleTokenExpire}],
-              {
-                cancelable: false,
-              },
-            );
-            return;
-          }
-          showToast(message);
-        }
-      } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
-        });
-        showToast('Network Request Error...');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   handleSharePost = async postId => {
     try {
       // starting loader
@@ -413,10 +258,9 @@ class NewsFeeds extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/sharePost',
-        params,
-      );
+      await this.props.sharePost('Customers/sharePost', params);
+
+      const {isSharePost: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -581,7 +425,7 @@ class NewsFeeds extends Component {
 
           if (success) {
             const {notificationCount} = response;
-            await storeData(KEYS.NOTIFICATION_COUNT, {notificationCount});
+            // await storeData(KEYS.NOTIFICATION_COUNT, {notificationCount});
             this.setState({
               notificationCount,
               isLoading: false,
@@ -596,7 +440,6 @@ class NewsFeeds extends Component {
 
   handleReportPopOn = (postId = -1) => {
     this.postId = postId;
-
     this.setState({isReportPop: true});
   };
 
@@ -817,24 +660,20 @@ class NewsFeeds extends Component {
 }
 
 const mapDispatchToProps = {
-  getNotificationCount: homeOperations.getNotificationCount,
-  saveCartCount: cartCountOperations.saveCartCount,
-  getCartCount: cartOperations.getCartCount,
   newsFeed: postsOperations.newsFeed,
-  addReaction: postsOperations.addReaction,
   commentPost: postsOperations.commentPost,
   reportOrBlock: postsOperations.reportOrBlock,
+  likePost: postsOperations.likePost,
+  sharePost: postsOperations.sharePost,
 };
 
 const mapStateToProps = state => ({
   isProcessing: loaderSelectors.isProcessing(state),
-  isGetNotificationCount: homeSelectors.isGetNotificationCount(state),
-  isGetCartCount: cartSelectors.isGetCartCount(state),
   isNewsFeed: postsSelectors.isNewsFeed(state),
-  isAddReaction: postsSelectors.isAddReaction(state),
   isCommentPost: postsSelectors.isCommentPost(state),
   isReportOrBlock: postsSelectors.isReportOrBlock(state),
-  getCartItemCount: cartCountSelectors.getCartItemCount(state),
+  isLikePost: postsSelectors.isLikePost(state),
+  isSharePost: postsSelectors.isSharePost(state),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewsFeeds);
