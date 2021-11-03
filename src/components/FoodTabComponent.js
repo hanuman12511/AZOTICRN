@@ -38,10 +38,7 @@ import {showToast} from '../components/CustomToast';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, storeData, getData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {KEYS, storeData, getData} from 'state/utils/UserPreference';
 
 export default class FoodTabComponent extends Component {
   constructor(props) {

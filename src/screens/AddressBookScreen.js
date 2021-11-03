@@ -27,10 +27,8 @@ import ic_plus_orange from '../assets/icons/ic_plus_orange.png';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {clearData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {clearData} from 'state/utils/UserPreference';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class MyAddressScreen extends Component {
   constructor(props) {
@@ -69,8 +67,8 @@ export default class MyAddressScreen extends Component {
 
       let params = null;
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/myAddress',
+      const response = await makeNetworkRequest(
+        'Customers/myAddress',
         params,
         true,
       );
@@ -133,7 +131,7 @@ export default class MyAddressScreen extends Component {
     this.props.navigation.navigate('Login');
   };
 
-  deleteAddressCallback = async (addressId) => {
+  deleteAddressCallback = async addressId => {
     try {
       // starting loader
       this.setState({isProcessing: true});
@@ -146,8 +144,8 @@ export default class MyAddressScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/deleteAddress',
+      const response = await makeNetworkRequest(
+        'Customers/deleteAddress',
         params,
         true,
       );

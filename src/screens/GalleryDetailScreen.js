@@ -34,7 +34,7 @@ import HeaderComponent from '../components/HeaderComponent';
 import GalTabCommentComponent from '../components/GalTabCommentComponent';
 
 // UserPreference
-import {KEYS, getData} from '../api/UserPreference';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 export default class GalleryDetailScreen extends Component {
   constructor(props) {

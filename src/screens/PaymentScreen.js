@@ -32,10 +32,11 @@ import ic_cards from '../assets/icons/ic_cards.png';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, clearData, getData} from '../api/UserPreference';
+import {KEYS, clearData, getData} from 'state/utils/UserPreference';
 
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class PaymentScreen extends Component {
   constructor(props) {
@@ -68,7 +69,7 @@ export default class PaymentScreen extends Component {
     this.backHandler.remove();
   }
 
-  handlePaymentMode = (payMode) => () => {
+  handlePaymentMode = payMode => () => {
     this.setState({paymentMode: payMode});
   };
 
@@ -109,8 +110,8 @@ export default class PaymentScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/placeOrder',
+      const response = await makeNetworkRequest(
+        'Customers/placeOrder',
         params,
         true,
       );
@@ -184,7 +185,7 @@ export default class PaymentScreen extends Component {
     this.props.navigation.navigate('Login');
   };
 
-  handleOnlinePayment = async (info) => {
+  handleOnlinePayment = async info => {
     try {
       const {
         deviceId,
@@ -232,8 +233,8 @@ export default class PaymentScreen extends Component {
         console.log('Params -=-=', params);
 
         // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Customers/onlinePaymentVerification',
+        const response = await makeNetworkRequest(
+          'Customers/onlinePaymentVerification',
           params,
           true,
         );

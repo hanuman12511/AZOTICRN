@@ -48,8 +48,9 @@ navigator.geolocation = require('@react-native-community/geolocation');
 // import {BASE_URL, makeNetworkRequest} from '../api/ApiInfo';
 
 // User Preference
-import {KEYS, getData, storeData} from '../api/UserPreference';
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {KEYS, getData, storeData} from 'state/utils/UserPreference';
+
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class ChangeCurrentLocation extends Component {
   constructor(props) {
@@ -116,7 +117,7 @@ export default class ChangeCurrentLocation extends Component {
     }
   };
 
-  handleSaveLocation = async (locationCoords) => {
+  handleSaveLocation = async locationCoords => {
     const {latitude, longitude} = locationCoords;
 
     try {
@@ -138,8 +139,8 @@ export default class ChangeCurrentLocation extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/saveUserLatLong',
+      const response = await makeNetworkRequest(
+        'Customers/saveUserLatLong',
         params,
       );
 

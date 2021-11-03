@@ -34,10 +34,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, storeData, getData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {KEYS, storeData, getData} from 'state/utils/UserPreference';
 
 export default class LiveTabComponent extends Component {
   constructor(props) {

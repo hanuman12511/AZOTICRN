@@ -12,6 +12,7 @@ import {
   Platform,
   BackHandler,
   Pressable,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 // Permission
@@ -30,13 +31,14 @@ import RadioForm, {
   RadioButtonLabel,
 } from 'react-native-simple-radio-button';
 
+import RBSheet from 'react-native-raw-bottom-sheet';
+
 //Responsive Screen
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import Modal, {ModalContent, BottomModal} from 'react-native-modals';
 import PickerModal from 'react-native-picker-modal-view';
 import DocumentPicker from 'react-native-document-picker';
 
@@ -57,10 +59,7 @@ import basicStyles from '../../styles/BasicStyles';
 import ic_down from '../../assets/icons/ic_down.png';
 
 // UserPreference
-import {KEYS, storeData, clearData, getData} from '../../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../../api/ApiInfo';
+import {KEYS, storeData, clearData, getData} from 'state/utils/UserPreference';
 
 // Icons
 import ic_camara from '../../assets/icons/ic_camara.png';
@@ -108,7 +107,7 @@ class MenuScreen extends Component {
       addOnAmount: 0,
       newAmount: 0,
       cameraImages: [],
-      deliveryDate: null,
+      deliveryDate: '',
       slotsData: [],
       selectedSlots: {
         Id: -1,
@@ -219,7 +218,12 @@ class MenuScreen extends Component {
 
       const {vendorId} = await this.props;
 
-      let params = null;
+      let params = {
+        vendorId,
+        type: 'restaurant',
+        slotId: selectedSlots ? selectedSlots.Id : '',
+        slotDate: this.state.deliveryDate,
+      };
 
       if (userInfo) {
         const {payloadId} = userInfo;
@@ -306,7 +310,7 @@ class MenuScreen extends Component {
       };
 
       // calling api
-      await this.props.addToFavourite('Customers/addToFavourite', params);
+      await this.props.addToFavourite('Customers/addToFavourite', params, true);
 
       const {isAddToFavourite: response} = this.props;
 
@@ -351,30 +355,6 @@ class MenuScreen extends Component {
   handleTokenExpire = async () => {
     await clearData();
     this.props.navigation.navigate('Login');
-  };
-
-  handleQualityPopup = async (productId, quantity) => {
-    await this.setState({productId});
-    await this.getProductDetails(productId);
-    this.setState({showQualityPopup: true});
-  };
-
-  closePopup = () => {
-    this.setState({
-      showQualityPopup: false,
-      cameraImages: [],
-      quantity: 1,
-      selectedRadioButtonIndex: 0,
-      price: 0,
-      newPrice: 0,
-      addOnAmount: 0,
-      newAmount: 0,
-      note: '',
-      isCustom: false,
-      customId: -1,
-      addonId: -1,
-      productVariants: false,
-    });
   };
 
   //Cart Pop Up Content
@@ -524,6 +504,7 @@ class MenuScreen extends Component {
         });
 
         if (success) {
+          this.RBSheet.close();
           this.closePopup();
 
           await this.fetchCartCount();
@@ -747,6 +728,32 @@ class MenuScreen extends Component {
 
   handleSelectSlotDate = (selectedSlot, selectedSlotIndex) => () => {
     this.setState({selectedSlot, selectedSlotIndex});
+  };
+
+  handleQualityPopup = async (productId, quantity) => {
+    this.setState({productId}, async () => {
+      await this.getProductDetails(productId);
+      // this.setState({showQualityPopup: true});
+      this.RBSheet.open();
+    });
+  };
+
+  closePopup = () => {
+    this.setState({
+      showQualityPopup: false,
+      cameraImages: [],
+      quantity: 1,
+      selectedRadioButtonIndex: 0,
+      price: 0,
+      newPrice: 0,
+      addOnAmount: 0,
+      newAmount: 0,
+      note: '',
+      isCustom: false,
+      customId: -1,
+      addonId: -1,
+      productVariants: false,
+    });
   };
 
   renderItem = ({item}) => (
@@ -996,157 +1003,176 @@ class MenuScreen extends Component {
               </View>
             )}
 
-            <BottomModal
-              visible={this.state.showQualityPopup}
-              onTouchOutside={this.closePopup}
+            <RBSheet
+              ref={ref => {
+                this.RBSheet = ref;
+              }}
+              closeOnDragDown={true}
+              closeOnPressMask={false}
+              onClose={this.closePopup}
+              // height={hp(60)}
+              customStyles={{
+                wrapper: {
+                  backgroundColor: 'rgba(0,0,0,0.5)',
+                },
+                container: {
+                  minHeight: hp(50),
+                  padding: wp(2),
+                  borderTopLeftRadius: wp(4),
+                  borderTopRightRadius: wp(4),
+                },
+                draggableIcon: {
+                  backgroundColor: '#ff6000',
+                },
+              }}>
+              <TouchableWithoutFeedback style={styles.popupContainer}>
+                <ScrollView
+                  contentContainerStyle={[styles.popupContainerInner]}>
+                  <View style={basicStyles.directionRow}>
+                    <Text
+                      style={[
+                        basicStyles.headingLarge,
+                        basicStyles.marginRight,
+                      ]}>
+                      Quantity:
+                    </Text>
 
-              // modalStyle={{  }}
-            >
-              <ModalContent
-                style={{
-                  // flex: 1,
-                  // backgroundColor: 'fff',
-                  minHeight: hp(30),
-                }}>
-                <View style={styles.popupContainer}>
-                  <ScrollView
-                    contentContainerStyle={[styles.popupContainerInner]}>
-                    <View style={basicStyles.directionRow}>
-                      <Text
-                        style={[
-                          basicStyles.headingLarge,
-                          basicStyles.marginRight,
+                    <View style={[basicStyles.directionRow, styles.addLess]}>
+                      <Pressable
+                        onPress={this.handleSubtraction}
+                        style={({pressed}) => [
+                          {
+                            opacity: pressed ? 0.2 : 1.0,
+                            zIndex: 99,
+                            borderWidth: 0.5,
+                            borderColor: '#3334',
+                            height: hp(3.2),
+                            aspectRatio: 1 / 1,
+                          },
                         ]}>
-                        Quantity:
-                      </Text>
-                      <View style={[basicStyles.directionRow, styles.addLess]}>
-                        <Pressable
-                          onPress={this.handleSubtraction}
-                          style={({pressed}) => [
+                        <Text style={styles.lessValue}>-</Text>
+                      </Pressable>
+
+                      <Text style={styles.quantity}>{quantity}</Text>
+
+                      <Pressable
+                        onPress={this.handleAddition}
+                        hitSlop={8}
+                        style={
+                          ({zIndex: 99},
+                          ({pressed}) => [
                             {
                               opacity: pressed ? 0.2 : 1.0,
-                              zIndex: 99,
+                              borderWidth: 0.5,
+                              borderColor: '#3334',
+                              height: hp(3.2),
+                              aspectRatio: 1 / 1,
                             },
-                          ]}>
-                          <Text style={styles.lessValue}>-</Text>
-                        </Pressable>
+                          ])
+                        }>
+                        <Text style={styles.lessValue}>+</Text>
+                      </Pressable>
+                    </View>
+                  </View>
 
-                        <Text style={styles.quantity}>{quantity}</Text>
-
-                        <Pressable
-                          onPress={this.handleAddition}
-                          hitSlop={8}
-                          style={
-                            ({zIndex: 99},
-                            ({pressed}) => [{opacity: pressed ? 0.2 : 1.0}])
-                          }>
-                          <Text style={styles.lessValue}>+</Text>
-                        </Pressable>
+                  {isCustom ? (
+                    <View style={[styles.dataContainer]}>
+                      <View
+                        style={[
+                          basicStyles.flexOne,
+                          // basicStyles.marginTopHalf,
+                        ]}>
+                        {this.state.productVariants ? (
+                          <RadioForm animation={true} style={styles.radioForm}>
+                            {this.renderCustomization()}
+                          </RadioForm>
+                        ) : null}
                       </View>
                     </View>
+                  ) : null}
 
-                    {isCustom ? (
-                      <View style={[styles.dataContainer]}>
-                        <View
-                          style={[
-                            basicStyles.flexOne,
-                            // basicStyles.marginTopHalf,
-                          ]}>
-                          {this.state.productVariants ? (
-                            <RadioForm
-                              animation={true}
-                              style={styles.radioForm}>
-                              {this.renderCustomization()}
-                            </RadioForm>
-                          ) : null}
-                        </View>
-                      </View>
-                    ) : null}
-
-                    <View style={basicStyles.separatorHorizontal} />
-                    {isAddOns ? (
-                      <View style={[styles.dataContainer]}>
-                        <FlatList
-                          data={this.state.productAddOns}
-                          renderItem={this.renderAddon}
-                          keyExtractor={this.keyExtractor}
-                          showsVerticalScrollIndicator={false}
-                          ItemSeparatorComponent={this.itemSeparator}
-                          contentContainerStyle={styles.listContainer}
-                        />
-                      </View>
-                    ) : null}
-
-                    {isCustom || isAddOns ? (
-                      <View style={basicStyles.separatorHorizontal} />
-                    ) : null}
-
-                    <View
-                      style={[
-                        basicStyles.directionRow,
-                        basicStyles.justifyBetween,
-                        basicStyles.alignCenter,
-                        basicStyles.marginTopHalf,
-                        basicStyles.marginBottom,
-                      ]}>
-                      <Text style={basicStyles.heading}>Total Price</Text>
-                      <Text style={basicStyles.heading}>
-                        ₹ {newPrice + addons}
-                      </Text>
-                    </View>
-
-                    <View style={styles.textareaContainerMain}>
-                      <TextInput
-                        multiline
-                        style={styles.textarea}
-                        onChangeText={this.handleMessage}
-                        defaultValue={this.state.note}
-                        placeholder={'Add Note...'}
-                        placeholderTextColor={'#444'}
-                        underlineColorAndroid={'transparent'}
-                      />
-
-                      <TouchableOpacity onPress={this.handlePermission}>
-                        <Image
-                          source={ic_camara}
-                          resizeMode="cover"
-                          style={basicStyles.iconColumn}
-                        />
-                      </TouchableOpacity>
-                    </View>
-
-                    <View style={basicStyles.marginTop}>
+                  <View style={basicStyles.separatorHorizontal} />
+                  {isAddOns ? (
+                    <View style={[styles.dataContainer]}>
                       <FlatList
-                        data={cameraImages}
-                        renderItem={this.cameraImageItem}
+                        data={this.state.productAddOns}
+                        renderItem={this.renderAddon}
                         keyExtractor={this.keyExtractor}
-                        horizontal
                         showsVerticalScrollIndicator={false}
                         ItemSeparatorComponent={this.itemSeparator}
                         contentContainerStyle={styles.listContainer}
-                        extraData={this.state}
                       />
                     </View>
+                  ) : null}
 
-                    <Pressable
-                      onPress={this.handleAddToCart}
-                      // style={[]}
-                      style={({pressed}) => [
-                        {
-                          opacity: pressed ? 0.2 : 1.0,
-                          zIndex: 99,
-                        },
-                        styles.addCartButton,
-                      ]}>
-                      <Text
-                        style={[basicStyles.heading, basicStyles.whiteColor]}>
-                        Add to Cart
-                      </Text>
-                    </Pressable>
-                  </ScrollView>
-                </View>
-              </ModalContent>
-            </BottomModal>
+                  {isCustom || isAddOns ? (
+                    <View style={basicStyles.separatorHorizontal} />
+                  ) : null}
+
+                  <View
+                    style={[
+                      basicStyles.directionRow,
+                      basicStyles.justifyBetween,
+                      basicStyles.alignCenter,
+                      basicStyles.marginTopHalf,
+                      basicStyles.marginBottom,
+                    ]}>
+                    <Text style={basicStyles.heading}>Total Price</Text>
+                    <Text style={basicStyles.heading}>
+                      ₹ {newPrice + addons}
+                    </Text>
+                  </View>
+
+                  <View style={styles.textareaContainerMain}>
+                    <TextInput
+                      multiline
+                      style={styles.textarea}
+                      onChangeText={this.handleMessage}
+                      defaultValue={this.state.note}
+                      placeholder={'Add Note...'}
+                      placeholderTextColor={'#444'}
+                      underlineColorAndroid={'transparent'}
+                    />
+
+                    <TouchableOpacity onPress={this.handlePermission}>
+                      <Image
+                        source={ic_camara}
+                        resizeMode="cover"
+                        style={basicStyles.iconColumn}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={basicStyles.marginTop}>
+                    <FlatList
+                      data={cameraImages}
+                      renderItem={this.cameraImageItem}
+                      keyExtractor={this.keyExtractor}
+                      horizontal
+                      showsVerticalScrollIndicator={false}
+                      ItemSeparatorComponent={this.itemSeparator}
+                      contentContainerStyle={styles.listContainer}
+                      extraData={this.state}
+                    />
+                  </View>
+
+                  <Pressable
+                    onPress={this.handleAddToCart}
+                    // style={[]}
+                    style={({pressed}) => [
+                      {
+                        opacity: pressed ? 0.2 : 1.0,
+                        zIndex: 99,
+                      },
+                      styles.addCartButton,
+                    ]}>
+                    <Text style={[basicStyles.heading, basicStyles.whiteColor]}>
+                      Add to Cart
+                    </Text>
+                  </Pressable>
+                </ScrollView>
+              </TouchableWithoutFeedback>
+            </RBSheet>
           </View>
         )}
         {this.state.isProcessing && <ProcessingLoader />}
@@ -1189,6 +1215,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginLeft: wp(1),
     borderRadius: wp(1),
+    marginBottom: wp(2),
   },
   addButton: {
     // backgroundColor: '#ff6000',
@@ -1225,11 +1252,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   lessValue: {
-    borderWidth: 0.5,
-    borderColor: '#3334',
-    height: 25,
-    width: 25,
-    lineHeight: 25,
     textAlign: 'center',
     fontSize: wp(4),
   },

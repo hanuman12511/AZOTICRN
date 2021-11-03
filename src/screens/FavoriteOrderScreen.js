@@ -25,12 +25,12 @@ import basicStyles from '../styles/BasicStyles';
 // Images
 
 //UserPreference
-import {clearData, KEYS} from '../api/UserPreference';
+import {clearData, KEYS} from 'state/utils/UserPreference';
 
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
 
 import {FacebookLoader} from 'react-native-easy-content-loader';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class FavoriteOrders extends Component {
   constructor(props) {
@@ -67,8 +67,8 @@ export default class FavoriteOrders extends Component {
       const params = null;
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/favouriteProducts',
+      const response = await makeNetworkRequest(
+        'Customers/favouriteProducts',
         params,
         true,
       );
@@ -141,8 +141,8 @@ export default class FavoriteOrders extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/addToFavourite',
+      const response = await makeNetworkRequest(
+        'Customers/addToFavourite',
         params,
         true,
       );

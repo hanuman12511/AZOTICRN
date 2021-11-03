@@ -62,10 +62,11 @@ import basicStyles from '../styles/BasicStyles';
 import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //UserPreference
-import {clearData, KEYS, getData, storeData} from '../api/UserPreference';
+import {clearData, KEYS, getData, storeData} from 'state/utils/UserPreference';
 
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class MyAccountScreen extends Component {
   constructor(props) {
@@ -83,11 +84,11 @@ export default class MyAccountScreen extends Component {
       name: '',
     };
   }
-  UNSAFE_componentWillMount() {
-    this._subscribe = this.props.navigation.addListener('didFocus', () => {
-      this.fetchUserProfile();
-    });
-  }
+  // UNSAFE_componentWillMount() {
+  //   this._subscribe = this.props.navigation.addListener('didFocus', () => {
+  //     this.fetchUserProfile();
+  //   });
+  // }
 
   componentDidMount() {
     this.backHandler = BackHandler.addEventListener(
@@ -109,7 +110,6 @@ export default class MyAccountScreen extends Component {
 
   componentWillUnmount() {
     this.backHandler.remove();
-    this._subscribe;
   }
 
   fetchUserProfile = async () => {
@@ -125,8 +125,8 @@ export default class MyAccountScreen extends Component {
       //   };
       let params = null;
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/viewProfile',
+      const response = await makeNetworkRequest(
+        'Customers/viewProfile',
         params,
         true,
       );
@@ -332,7 +332,7 @@ export default class MyAccountScreen extends Component {
           maxHeight: 500,
           quality: 0.5,
         },
-        (response) => {
+        response => {
           if (response.didCancel) {
             console.log('User cancelled image picker');
           } else if (response.error) {
@@ -399,25 +399,9 @@ export default class MyAccountScreen extends Component {
   handleUpdateProfile = async () => {
     const {userName, bio, userPic, name} = this.state;
 
-    /*  if (!this.coords) {
-      Alert.alert('', 'Please select current location', [{text: 'OK'}], {
-        cancelable: false,
-      });
-      return;
-    } */
-
-    // if (name.trim() === '') {
-    //   Alert.alert('', 'Please enter Name', [{text: 'OK'}], {
-    //     cancelable: false,
-    //   });
-    //   return;
-    // }
-
     try {
       // starting processing loader
       this.setState({isProcessing: true});
-      // fetching userInfo
-      // const userInfo = await getData(KEYS.USER_INFO);
 
       // preparing params
       const params = {
@@ -428,8 +412,8 @@ export default class MyAccountScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/updateProfile',
+      const response = await makeNetworkRequest(
+        'Customers/updateProfile',
         params,
         true,
         false,
@@ -484,7 +468,7 @@ export default class MyAccountScreen extends Component {
     this.props.navigation.navigate('Login');
   };
 
-  handleNameChange = (changedText) => {
+  handleNameChange = changedText => {
     this.setState({name: changedText});
   };
 
@@ -495,15 +479,8 @@ export default class MyAccountScreen extends Component {
     }
 
     const {userInfo, userImage, changePasswordPopup} = this.state;
-    const {
-      name,
-      mobile,
-      userName,
-      bio,
-      followedVendors,
-      email,
-      likedDished,
-    } = userInfo;
+    const {name, mobile, userName, bio, followedVendors, email, likedDished} =
+      userInfo;
 
     return (
       <SafeAreaView style={[basicStyles.container]}>
@@ -729,7 +706,7 @@ export default class MyAccountScreen extends Component {
                     placeholderTextColor="#333"
                     style={styles.input}
                     value={this.state.name}
-                    onChangeText={(e) => this.setState({name: e})}
+                    onChangeText={e => this.setState({name: e})}
                   />
                 </View>
 
@@ -741,7 +718,7 @@ export default class MyAccountScreen extends Component {
                     placeholderTextColor="#333"
                     style={styles.inputBig}
                     value={this.state.bio}
-                    onChangeText={(e) => this.setState({bio: e})}
+                    onChangeText={e => this.setState({bio: e})}
                   />
                 </View>
 

@@ -31,10 +31,11 @@ import ProcessingLoader from '../components/ProcessingLoader';
 import {checkPermission} from '../firebase_api/FirebaseAPI';
 import RNOtpVerify from 'react-native-otp-verify';
 // UserPreference
-import {KEYS, storeData, getData} from '../api/UserPreference';
+import {KEYS, storeData, getData} from 'state/utils/UserPreference';
 
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class StartScreen extends Component {
   constructor(props) {
@@ -127,8 +128,8 @@ export default class StartScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/loginOtpVerify',
+      const response = await makeNetworkRequest(
+        'Customers/loginOtpVerify',
         params,
         false,
         false,
@@ -186,8 +187,8 @@ export default class StartScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/resendOtp',
+      const response = await makeNetworkRequest(
+        'Customers/resendOtp',
         params,
         false,
         false,

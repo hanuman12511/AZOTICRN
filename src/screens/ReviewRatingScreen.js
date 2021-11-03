@@ -30,8 +30,7 @@ import StarRating from 'react-native-star-rating';
 import {showToast} from '../components/CustomToast';
 import ProcessingLoader from '../components/ProcessingLoader';
 
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 // User Preference
 
@@ -96,8 +95,8 @@ export default class ReviewRatingScreen extends Component {
         };
 
         // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Customers/addRating',
+        const response = await makeNetworkRequest(
+          'Customers/addRating',
           params,
           true,
         );
@@ -122,11 +121,11 @@ export default class ReviewRatingScreen extends Component {
     }
   };
 
-  handleTitleChange = (changedText) => {
+  handleTitleChange = changedText => {
     this.setState({title: changedText});
   };
 
-  handleDescriptionChange = (changedText) => {
+  handleDescriptionChange = changedText => {
     this.setState({reviews: changedText});
   };
 
@@ -152,7 +151,7 @@ export default class ReviewRatingScreen extends Component {
                 halfStar={ic_half_star}
                 emptyStar={no_star}
                 starSize={25}
-                selectedStar={(rating) => this.onStarRatingPress(rating)}
+                selectedStar={rating => this.onStarRatingPress(rating)}
                 starStyle={styles.stars}
               />
             </View>

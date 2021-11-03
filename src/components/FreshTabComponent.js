@@ -22,7 +22,7 @@ import checked_green from '../assets/icons/checked_green.png';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, storeData, getData} from '../api/UserPreference';
+import {KEYS, storeData, getData} from 'state/utils/UserPreference';
 
 // API
 
@@ -91,14 +91,8 @@ export default class FoodTabComponent extends Component {
   };
 
   render() {
-    const {
-      vendorName,
-      vendorImage,
-      avgRatings,
-      bio,
-      ratingCount,
-      followCount,
-    } = this.props.item;
+    const {vendorName, vendorImage, avgRatings, bio, ratingCount, followCount} =
+      this.props.item;
     const {followStatus} = this.state;
 
     const orderContainerMain = {

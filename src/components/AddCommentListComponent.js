@@ -172,7 +172,7 @@ export default class AddCommentListComponent extends Component {
           </TouchableOpacity>
 
           <View style={[basicStyles.flexOne]}>
-            <TouchableOpacity onPress={this.handleShowSubCategory}>
+            <View>
               <View
                 style={[basicStyles.directionRow, basicStyles.justifyBetween]}>
                 <Text style={[styles.userNameStyle]}>{userName}</Text>
@@ -209,7 +209,7 @@ export default class AddCommentListComponent extends Component {
               {comment ? (
                 <Text style={styles.notificationDescription}>{comment}</Text>
               ) : null}
-            </TouchableOpacity>
+            </View>
 
             <View
               style={[
@@ -225,13 +225,21 @@ export default class AddCommentListComponent extends Component {
                     basicStyles.marginRightHalf,
                   ]}
                   onPress={this.handleReply}>
+                  <Text style={[styles.notificationDate]}>Reply</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    basicStyles.directionRow,
+                    basicStyles.alignCenter,
+                    basicStyles.marginRightHalf,
+                  ]}
+                  onPress={this.handleShowSubCategory}>
                   {replyCount ? (
-                    <Text style={[styles.notificationDate]}>
-                      Reply ({replyCount})
+                    <Text style={[styles.replyDateText]}>
+                      View {replyCount} Reply
                     </Text>
-                  ) : (
-                    <Text style={[styles.notificationDate]}>Reply</Text>
-                  )}
+                  ) : null}
                 </TouchableOpacity>
               </View>
 
@@ -294,6 +302,12 @@ const styles = StyleSheet.create({
     fontSize: wp(3.5),
     textAlign: 'right',
     color: '#666',
+  },
+  replyDateText: {
+    fontSize: wp(3.5),
+    textAlign: 'right',
+    color: '#ffa633',
+    fontWeight: '700',
   },
 
   userImg: {

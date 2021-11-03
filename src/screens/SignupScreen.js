@@ -50,14 +50,13 @@ import DateTimePicker from '../components/DateTimePicker';
 import uploadToken from '../firebase_api/UploadTokenAPI';
 
 // UserPreference
-import {KEYS, storeData, getData} from '../api/UserPreference';
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {KEYS, storeData, getData} from 'state/utils/UserPreference';
 
 // VectorIcons
 
 // Validations
 import {isMobileNumber, isEmailAddress} from '../validations/FormValidator';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class StartScreen extends Component {
   constructor(props) {
@@ -147,8 +146,8 @@ export default class StartScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/registration',
+      const response = await makeNetworkRequest(
+        'Customers/registration',
         params,
       );
 

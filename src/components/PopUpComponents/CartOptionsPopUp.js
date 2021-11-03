@@ -33,10 +33,11 @@ import {showToast} from '../CustomToast';
 import basicStyles from '../../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, getData} from '../../api/UserPreference';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 // API
-import {BASE_URL, makeRequest} from '../../api/ApiInfo';
+
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class CartOptionsPopUp extends Component {
   constructor(props) {
@@ -72,13 +73,13 @@ export default class CartOptionsPopUp extends Component {
     this.addonDetails = new Set();
   }
 
-  handleStartShouldSetResponder = (event) => {
+  handleStartShouldSetResponder = event => {
     if (this.parentView._nativeTag === event.target._nativeTag) {
       this.props.closePopup();
     }
   };
 
-  setViewRef = (ref) => {
+  setViewRef = ref => {
     this.parentView = ref;
   };
 
@@ -97,8 +98,8 @@ export default class CartOptionsPopUp extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/getProductDetail',
+      const response = await makeNetworkRequest(
+        'Customers/getProductDetail',
         params,
       );
 
@@ -192,13 +193,8 @@ export default class CartOptionsPopUp extends Component {
   };
 
   handleAddToCart = async () => {
-    const {
-      customId,
-      isCustom,
-      selectedTimeSlotId,
-      selectedSlot,
-      slotsInfo,
-    } = this.state;
+    const {customId, isCustom, selectedTimeSlotId, selectedSlot, slotsInfo} =
+      this.state;
 
     // validations
     // if (isCustom === true) {
@@ -259,10 +255,7 @@ export default class CartOptionsPopUp extends Component {
       }
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/addToCart',
-        params,
-      );
+      const response = await makeNetworkRequest('Customers/addToCart', params);
 
       // Processing Response
       if (response) {
@@ -341,10 +334,7 @@ export default class CartOptionsPopUp extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/deleteCart',
-        params,
-      );
+      const response = await makeNetworkRequest('Customers/deleteCart', params);
 
       // Processing Response
       if (response) {
@@ -384,11 +374,11 @@ export default class CartOptionsPopUp extends Component {
     }
   };
 
-  handleMessage = (changedText) => {
+  handleMessage = changedText => {
     this.setState({note: changedText});
   };
 
-  handleRadioButtonPress = (selectedRadioButtonIndex) => {
+  handleRadioButtonPress = selectedRadioButtonIndex => {
     const {productVariants, price, addOnAmount} = this.state;
     const {quantity} = this.props.item;
     let custom = productVariants[selectedRadioButtonIndex].name;
@@ -486,7 +476,7 @@ export default class CartOptionsPopUp extends Component {
     this.setState({selectedSlot, selectedSlotIndex});
   };
 
-  selectTimeSlotCallback = (selectedTimeSlotId) => {
+  selectTimeSlotCallback = selectedTimeSlotId => {
     this.setState({selectedTimeSlotId});
   };
 

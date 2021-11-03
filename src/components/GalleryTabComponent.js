@@ -32,10 +32,6 @@ export default class NewsFeedComponent extends Component {
     };
   }
 
-  onLoginPress = () => {
-    this.props.nav.navigate('Register');
-  };
-
   handleGalleryDetail = () => {
     const {item} = this.props;
     this.props.nav.navigate('GalleryDetail', {item});

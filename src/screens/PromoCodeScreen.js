@@ -27,11 +27,9 @@ import PromoCodeListComponent from '../components/PromoCodeListComponent';
 import CustomLoader from '../components/CustomLoader';
 import ProcessingLoader from '../components/ProcessingLoader';
 
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
-
 // User Preference
-import {KEYS, getData} from '../api/UserPreference';
+import {KEYS, getData} from 'state/utils/UserPreference';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class CouponScreen extends Component {
   constructor(props) {
@@ -73,8 +71,8 @@ export default class CouponScreen extends Component {
 
       const params = null;
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/promoCodeList',
+      const response = await makeNetworkRequest(
+        'Customers/promoCodeList',
         params,
         true,
       );

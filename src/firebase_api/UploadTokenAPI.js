@@ -3,7 +3,7 @@ import {getUniqueId} from 'react-native-device-info';
 import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 // User Preference
-import {KEYS, storeData} from '../api/UserPreference';
+import {KEYS, storeData} from 'state/utils/UserPreference';
 
 const uploadToken = async fcmToken => {
   try {

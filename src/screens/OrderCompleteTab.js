@@ -14,12 +14,10 @@ import {showToast} from '../components/CustomToast';
 import basicStyles from '../styles/BasicStyles';
 
 //UserPreference
-import {clearData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {clearData} from 'state/utils/UserPreference';
 
 import {FacebookLoader} from 'react-native-easy-content-loader';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class OrderCompleteTab extends Component {
   constructor(props) {
@@ -48,8 +46,8 @@ export default class OrderCompleteTab extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/viewOrders',
+      const response = await makeNetworkRequest(
+        'Customers/viewOrders',
         params,
         true,
       );
@@ -149,8 +147,8 @@ export default class OrderCompleteTab extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/addRating',
+      const response = await makeNetworkRequest(
+        'Customers/addRating',
         params,
         true,
       );

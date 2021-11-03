@@ -38,12 +38,13 @@ import ic_show_more from '../assets/icons/ic_show_more.png';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, getData} from '../api/UserPreference';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 export default class NewsFeedComponent extends Component {
   constructor(props) {
     super(props);
     const {likeStatus} = props.item;
+    console.log('In Prop', likeStatus);
     this.state = {
       likeStatus,
       isLike: false,
@@ -88,10 +89,8 @@ export default class NewsFeedComponent extends Component {
     this.setState({isLike: false});
 
     if (likeStatus === true) {
-      this.setState({likeStatus: false});
       likeStatus = false;
     } else if (likeStatus === false) {
-      this.setState({likeStatus: true});
       likeStatus = true;
     }
     await handleLikeUnlike(likeStatus, postId);
@@ -161,7 +160,10 @@ export default class NewsFeedComponent extends Component {
     } else {
       const {item} = this.props;
 
-      this.props.nav.navigate('Comment', {item});
+      this.props.nav.navigate('Comment', {
+        item,
+        fetchNewsFeeds: this.props.fetchNewsFeeds,
+      });
     }
   };
 
@@ -235,7 +237,7 @@ export default class NewsFeedComponent extends Component {
     } = this.props.item;
 
     const {likeStatus, isLike, isLoggedIn} = this.state;
-
+    console.log(description, 'In Ren', likeStatus);
     return (
       <View style={[basicStyles.container, styles.feedsContainer]}>
         <TouchableOpacity

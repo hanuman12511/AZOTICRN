@@ -15,7 +15,7 @@ import ic_show_more from '../assets/icons/ic_show_more.png';
 
 import {showToast} from '../components/CustomToast';
 
-import {clearData} from '../api/UserPreference';
+import {clearData} from 'state/utils/UserPreference';
 import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class AddCommentListComponent extends Component {

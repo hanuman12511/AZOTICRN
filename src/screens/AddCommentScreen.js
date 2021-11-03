@@ -36,11 +36,8 @@ import your_story from '../assets/images/your_story.png';
 // Styles
 import basicStyles from '../styles/BasicStyles';
 
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
-
 // User Preference
-import {clearData, getData, KEYS} from '../api/UserPreference';
+import {clearData, getData, KEYS} from 'state/utils/UserPreference';
 
 import {FacebookLoader} from 'react-native-easy-content-loader';
 
@@ -234,6 +231,11 @@ class AddCommentScreen extends Component {
             placeholderUpdate: 'Enter comment',
           });
           await this.fetchComments();
+          const fetchNewsFeeds = await this.props.navigation.getParam(
+            'fetchNewsFeeds',
+          );
+
+          await fetchNewsFeeds();
 
           showToast(message);
         } else {

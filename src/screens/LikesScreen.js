@@ -27,10 +27,7 @@ import LikeListComponents from '../components/LikeListComponents';
 import basicStyles from '../styles/BasicStyles';
 
 //UserPreference
-import {clearData, KEYS, getData, storeData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {clearData, KEYS, getData, storeData} from 'state/utils/UserPreference';
 
 // Redux
 import {connect} from 'react-redux';
@@ -81,16 +78,9 @@ class likesScreen extends Component {
       };
 
       // calling api
-      await this.props.viewComments('Customers/viewLikes', params, true);
-      const {isViewComments: response} = this.props;
-
-      // // calling api
-      // const response = await makeRequest(
-      //   BASE_URL + 'Customers/viewLikes',
-      //   params,
-      //   true,
-      // );
-
+      await this.props.viewLikes('Customers/viewLikes', params, true);
+      const {isViewLikes: response} = this.props;
+      console.log(response);
       // Processing Response
       if (response) {
         this.setState({

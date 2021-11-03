@@ -47,10 +47,7 @@ import {showToast} from '../components/CustomToast';
 // import uploadToken from '../firebase_api/UploadTokenAPI';
 
 // UserPreference
-import {KEYS, storeData, getData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {KEYS, storeData, getData} from 'state/utils/UserPreference';
 
 // Firebase Delegates
 import {

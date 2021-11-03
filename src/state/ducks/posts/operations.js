@@ -83,7 +83,7 @@ export const newsFeed = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(url, params, isToken, isJson);
-
+    console.log('Response', response);
     if (response) {
       const {success} = response;
 

@@ -14,7 +14,6 @@ import {userInfoSelectors} from 'state/ducks/userInfo';
 import SplashScreen from './src/screens/SplashScreen';
 
 // User Preference
-// import {KEYS, getData} from './src/api/UserPreference';
 
 // Routes
 import {createRootNavigator} from './src/routes/Routes';

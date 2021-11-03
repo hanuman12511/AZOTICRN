@@ -39,10 +39,7 @@ import about_to_end from '../../assets/icons/about_to_end.png';
 import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // UserPreference
-import {KEYS, storeData, getData, clearData} from '../../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../../api/ApiInfo';
+import {KEYS, storeData, getData, clearData} from 'state/utils/UserPreference';
 
 import {InstagramLoader} from 'react-native-easy-content-loader';
 

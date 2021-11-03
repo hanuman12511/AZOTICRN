@@ -29,15 +29,13 @@ import basicStyles from '../../styles/BasicStyles';
 import {InstagramLoader} from 'react-native-easy-content-loader';
 
 // UserPreference
-import {KEYS, storeData, getData, clearData} from '../../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../../api/ApiInfo';
+import {KEYS, getData, clearData} from 'state/utils/UserPreference';
 
 // Redux
 import {connect} from 'react-redux';
 import {loaderSelectors} from 'state/ducks/loader';
 import {postsSelectors, postsOperations} from 'state/ducks/posts';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 class NewsFeeds extends Component {
   constructor(props) {
@@ -64,6 +62,10 @@ class NewsFeeds extends Component {
   componentDidMount = async () => {
     this.fetchNewsFeeds();
     this.fetchNotificationCount();
+  };
+
+  componentWillUnmount = async () => {
+    this._subscribe;
   };
 
   fetchNewsFeeds = async () => {
@@ -192,14 +194,14 @@ class NewsFeeds extends Component {
       if (response) {
         const {success, message} = response;
 
-        // this.setState({
-        //   isProcessing: false,
-        // });
+        this.setState({
+          isProcessing: false,
+        });
 
         if (success) {
           const {follow} = response;
 
-          this.fetchNewsFeeds();
+          await this.fetchNewsFeeds();
           // showToast(message);
         } else {
           const {isAuthTokenExpired} = response;
@@ -413,8 +415,8 @@ class NewsFeeds extends Component {
           payloadId,
         };
         // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Notifications/getNotificationCount',
+        const response = await makeNetworkRequest(
+          'Notifications/getNotificationCount',
           params,
           true,
         );
@@ -502,13 +504,6 @@ class NewsFeeds extends Component {
 
       const {isReportOrBlock: response} = this.props;
 
-      // calling api
-      // const response = await makeRequest(
-      //   BASE_URL + 'Customers/reportOrBlock',
-      //   params,
-      //   true,
-      // );
-
       // Processing Response
       if (response) {
         const {success} = response;
@@ -565,49 +560,55 @@ class NewsFeeds extends Component {
       {id: 5, reason: "It's inappropriate"},
     ];
 
+    if (contentLoading) {
+      return (
+        <SafeAreaView style={[styles.container]}>
+          <View style={{flex: 1}}>
+            <InstagramLoader active loading={contentLoading} />
+            <InstagramLoader active loading={contentLoading} />
+          </View>
+        </SafeAreaView>
+      );
+    }
+
     return (
       <SafeAreaView style={[styles.container]}>
         <View style={[styles.container]}>
-          {contentLoading === true ? (
-            <View style={{flex: 1}}>
-              <InstagramLoader active loading={contentLoading} />
-              <InstagramLoader active loading={contentLoading} />
-            </View>
-          ) : (
-            <View style={basicStyles.flexOne}>
-              {newsFeeds ? (
-                <View style={styles.flatContainer}>
-                  <FlatList
-                    data={newsFeeds}
-                    renderItem={this.renderItem}
-                    keyExtractor={this.keyExtractor}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={this.itemSeparator}
-                    contentContainerStyle={styles.listContainer}
-                    refreshing={this.state.isListRefreshing}
-                    onRefresh={this.handleListRefresh}
-                    ListFooterComponent={this.renderFooter.bind(this)}
-                    onEndReachedThreshold={0.4}
-                    onEndReached={this.handleLoadMore.bind(this)}
-                  />
-                </View>
-              ) : (
-                <View style={[basicStyles.noDataStyle, basicStyles.flexOne]}>
-                  <Text
-                    style={[
-                      basicStyles.noDataTextStyle,
-                      basicStyles.graysColor2,
-                      basicStyles.textBold,
-                    ]}>
-                    {status}
-                  </Text>
-                </View>
-              )}
-            </View>
-          )}
+          <View style={basicStyles.flexOne}>
+            {newsFeeds ? (
+              <View style={styles.flatContainer}>
+                <FlatList
+                  data={newsFeeds}
+                  renderItem={this.renderItem}
+                  keyExtractor={this.keyExtractor}
+                  showsVerticalScrollIndicator={false}
+                  ItemSeparatorComponent={this.itemSeparator}
+                  contentContainerStyle={styles.listContainer}
+                  refreshing={this.state.isListRefreshing}
+                  onRefresh={this.handleListRefresh}
+                  ListFooterComponent={this.renderFooter.bind(this)}
+                  onEndReachedThreshold={0.4}
+                  onEndReached={this.handleLoadMore.bind(this)}
+                  extraData={this.state}
+                />
+              </View>
+            ) : (
+              <View style={[basicStyles.noDataStyle, basicStyles.flexOne]}>
+                <Text
+                  style={[
+                    basicStyles.noDataTextStyle,
+                    basicStyles.graysColor2,
+                    basicStyles.textBold,
+                  ]}>
+                  {status}
+                </Text>
+              </View>
+            )}
+          </View>
 
           {this.state.isProcessing && <ProcessingLoader />}
         </View>
+
         <Modal
           style={styles.modal2}
           position="bottom"

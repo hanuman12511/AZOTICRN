@@ -30,7 +30,8 @@ import ic_mail_oeange from '../assets/icons/ic_mail_oeange.png';
 import ic_map_orange from '../assets/icons/ic_map_orange.png';
 
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class ContactScreen extends Component {
   constructor(props) {
@@ -60,7 +61,7 @@ export default class ContactScreen extends Component {
   fetchContactDetails = async () => {
     try {
       // calling api
-      const response = await makeRequest(BASE_URL + 'Customers/contactUs');
+      const response = await makeNetworkRequest('Customers/contactUs');
 
       // Processing Response
       if (response) {

@@ -26,11 +26,10 @@ import ic_plus_orange from '../assets/icons/ic_plus_orange.png';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, storeData, getData, clearData} from '../api/UserPreference';
+import {KEYS, storeData, getData, clearData} from 'state/utils/UserPreference';
 
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
 import ProcessingLoader from '../components/ProcessingLoader';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class SelectAddressScreen extends Component {
   constructor(props) {
@@ -68,8 +67,8 @@ export default class SelectAddressScreen extends Component {
 
       let params = null;
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/myAddress',
+      const response = await makeNetworkRequest(
+        'Customers/myAddress',
         params,
         true,
       );
@@ -134,7 +133,7 @@ export default class SelectAddressScreen extends Component {
     this.props.navigation.navigate('Login');
   };
 
-  deleteAddressCallback = async (addressId) => {
+  deleteAddressCallback = async addressId => {
     try {
       // starting loader
       this.setState({isProcessing: true});
@@ -147,8 +146,8 @@ export default class SelectAddressScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/deleteAddress',
+      const response = await makeNetworkRequest(
+        'Customers/deleteAddress',
         params,
         true,
       );
@@ -223,7 +222,7 @@ export default class SelectAddressScreen extends Component {
     }
   };
 
-  handleCheckout = async (addressInfo) => {
+  handleCheckout = async addressInfo => {
     let info = await this.props.navigation.getParam('info');
 
     info.addressInfo = addressInfo;

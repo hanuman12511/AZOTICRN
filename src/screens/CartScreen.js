@@ -33,19 +33,12 @@ import new_products from '../assets/images/new_products.jpg';
 import ic_cart_black from '../assets/icons/ic_cart_black.png';
 
 // VectorIcons
-import Entypo from 'react-native-vector-icons/Entypo';
-import Material from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 // Styles
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, storeData, getData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {KEYS, storeData, getData} from 'state/utils/UserPreference';
 
 // Redux
 import {connect} from 'react-redux';
@@ -60,6 +53,7 @@ import {
   vendorsFreshSelectors,
   vendorsFreshOperations,
 } from 'state/ducks/vendorsFresh';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 class CartScreen extends Component {
   constructor(props) {
@@ -123,8 +117,8 @@ class CartScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/getCartList',
+      const response = await makeNetworkRequest(
+        'Customers/getCartList',
         params,
       );
 
@@ -267,10 +261,7 @@ class CartScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/updateCart',
-        params,
-      );
+      const response = await makeNetworkRequest('Customers/updateCart', params);
 
       this.setState({isProcessing: false, isListRefreshing: false});
       // processing response
@@ -320,8 +311,8 @@ class CartScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/deleteCartItem',
+      const response = await makeNetworkRequest(
+        'Customers/deleteCartItem',
         params,
       );
 

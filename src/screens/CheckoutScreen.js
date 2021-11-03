@@ -40,7 +40,7 @@ import ic_american_express from '../assets/icons/ic_american_express.png';
 // VectorIcons
 import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 // UserPreference
-import {KEYS, storeData, getData, clearData} from '../api/UserPreference';
+import {KEYS, storeData, getData, clearData} from 'state/utils/UserPreference';
 
 // API
 import {BASE_URL, makeRequest} from '../api/ApiInfo';
@@ -85,108 +85,6 @@ export default class CheckoutScreen extends Component {
     this.fetchCartItemCount();
   }
 
-  // fetchCheckout = async () => {
-  //   try {
-  //     const deviceInfo = await getData(KEYS.DEVICE_UNIQUE_ID);
-
-  //     if (!deviceInfo) {
-  //       return;
-  //     }
-
-  //     const {deviceId} = deviceInfo;
-
-  //     const params = {
-  //       deviceId,
-  //     };
-
-  //     // calling api
-  //     const response = await makeRequest(
-  //       BASE_URL + 'Customers/checkout',
-  //       params,
-  //       true,
-  //     );
-
-  //     // Processing Response
-  //     if (response) {
-  //       this.setState({
-  //         isLoading: false,
-  //         isProcessing: false,
-  //         contentLoading: false,
-  //         isListRefreshing: false,
-  //       });
-
-  //       const {success, message} = response;
-
-  //       if (success) {
-  //         const {addressInfo, slotsInfo} = response;
-
-  //         const {
-  //           id: addressId,
-  //           name,
-  //           nickName,
-  //           flatNo,
-  //           addressLine,
-  //         } = addressInfo;
-  //         let address = flatNo + ' ' + addressLine;
-
-  //         const infoAddress = {addressId, name, nickName, address};
-
-  //         // if (slotsInfo) {
-  //         //   const [selectedSlot] = slotsInfo;
-  //         //   const {slots} = selectedSlot;
-  //         //   const [selectedTimeSlot] = slots;
-  //         //   const {id: selectedTimeSlotId} = selectedTimeSlot;
-
-  //         //   this.setState({
-  //         //     slotsInfo,
-  //         //     selectedSlot,
-  //         //     selectedTimeSlotId,
-  //         //     // addressInfo: infoAddress,
-  //         //     isLoading: false,
-  //         //     isListRefreshing: false,
-  //         //   });
-  //         // } else {
-  //         this.setState({
-  //           slotsInfo,
-  //           // addressInfo: infoAddress,
-  //           isLoading: false,
-  //           isListRefreshing: false,
-  //         });
-
-  //         const {isAuthTokenExpired} = response;
-
-  //         if (isAuthTokenExpired === true) {
-  //           Alert.alert(
-  //             'Session Expired',
-  //             'Login Again to Continue!',
-  //             [{text: 'OK', onPress: this.handleTokenExpire}],
-  //             {
-  //               cancelable: false,
-  //             },
-  //           );
-  //           return;
-  //         }
-  //         // }
-  //       } else {
-  //         this.setState({
-  //           status: message,
-  //           isProcessing: false,
-  //           isLoading: false,
-  //           isListRefreshing: false,
-  //         });
-  //       }
-  //     } else {
-  //       this.setState({
-  //         isProcessing: false,
-  //         isLoading: false,
-  //       });
-  //       showToast('Network Request Error...');
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
-
   handleTokenExpire = async () => {
     await clearData();
     this.props.navigation.navigate('Login');
@@ -218,7 +116,6 @@ export default class CheckoutScreen extends Component {
 
         if (success) {
           const {cartCount: cartItemCount} = response;
-          // // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
 
           this.setState({
             cartItemCount,

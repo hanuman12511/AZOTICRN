@@ -18,7 +18,7 @@ import logo_black from '../assets/images/logo_black.png';
 import basicStyles from '../styles/BasicStyles';
 
 // User Preference
-import {KEYS, getData} from '../api/UserPreference';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 // Redux
 import {connect} from 'react-redux';
@@ -133,8 +133,6 @@ class HeaderComponent extends PureComponent {
       showNotification,
       cartItemCount,
     } = this.props;
-
-    console.log(this.props);
 
     let handleNavAction;
     if (navAction === 'back') {

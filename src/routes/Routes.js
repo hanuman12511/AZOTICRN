@@ -23,8 +23,6 @@ import OrderDetailScreen from '../screens/OrderDetailScreen';
 import SelectAddressScreen from '../screens/SelectAddressScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import MyAccountScreen from '../screens/MyAccountScreen';
-import MyProfileScreen from '../screens/MyProfileScreen';
-import EditProfileScreen from '../screens/EditProfileScreen';
 import AddressBookScreen from '../screens/AddressBookScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import FavoriteOrderScreen from '../screens/FavoriteOrderScreen';
@@ -174,8 +172,7 @@ const AddressNavigator = createStackNavigator(
 const AccountNavigator = createStackNavigator(
   {
     MyAccount: MyAccountScreen,
-    MyProfile: MyProfileScreen,
-    EditProfile: EditProfileScreen,
+
     OrdersNav: OrdersNavigator,
     AddressNav: AddressNavigator,
     FavoriteOrder: FavoriteOrderScreen,

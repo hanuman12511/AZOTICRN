@@ -35,7 +35,7 @@ import ic_send from '../assets/icons/ic_send.png';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {KEYS, getData} from '../api/UserPreference';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 export default class NewsFeedComponent extends Component {
   constructor(props) {

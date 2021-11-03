@@ -32,6 +32,7 @@ export default class LiveTabComponent extends Component {
   constructor(props) {
     super(props);
     const {favouriteStatus} = props.item;
+
     this.state = {
       quantity: 1,
       addFavStatus: favouriteStatus,

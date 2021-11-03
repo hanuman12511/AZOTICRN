@@ -42,7 +42,7 @@ import {showToast} from '../components/CustomToast';
 import APP_Banner1 from '../assets/images/APP_Banner1.jpg';
 import APP_Banner2 from '../assets/images/APP_Banner2.jpg';
 import APP_Banner3 from '../assets/images/APP_Banner3.gif';
-import {getData, KEYS, storeData} from '../api/UserPreference';
+import {getData, KEYS, storeData} from 'state/utils/UserPreference';
 
 // Redux
 import {connect} from 'react-redux';

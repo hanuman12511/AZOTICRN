@@ -24,10 +24,7 @@ import {showToast} from '../../components/CustomToast';
 import GalleryTabComponent from '../../components/GalleryTabComponent';
 
 // UserPreference
-import {KEYS, clearData, getData} from '../../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../../api/ApiInfo';
+import {KEYS, clearData, getData} from 'state/utils/UserPreference';
 
 import {InstagramLoader} from 'react-native-easy-content-loader';
 

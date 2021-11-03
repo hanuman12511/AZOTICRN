@@ -16,12 +16,10 @@ import basicStyles from '../styles/BasicStyles';
 // Images
 
 //UserPreference
-import {clearData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {clearData} from 'state/utils/UserPreference';
 
 import {FacebookLoader} from 'react-native-easy-content-loader';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class OrderCompleteTab extends Component {
   constructor(props) {
@@ -51,8 +49,8 @@ export default class OrderCompleteTab extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/viewOrders',
+      const response = await makeNetworkRequest(
+        'Customers/viewOrders',
         params,
         true,
       );
@@ -116,7 +114,7 @@ export default class OrderCompleteTab extends Component {
     this.props.navigation.navigate('Login');
   };
 
-  handleCancelOrder = async (orderId) => {
+  handleCancelOrder = async orderId => {
     try {
       // starting loader
       this.setState({isProcessing: true, isListRefreshing: false});
@@ -127,8 +125,8 @@ export default class OrderCompleteTab extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/cancelOrder',
+      const response = await makeNetworkRequest(
+        'Customers/cancelOrder',
         params,
         true,
       );

@@ -26,12 +26,10 @@ import {showToast} from '../components/CustomToast';
 import basicStyles from '../styles/BasicStyles';
 
 //UserPreference
-import {KEYS, getData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 import {InstagramLoader} from 'react-native-easy-content-loader';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class likesScreen extends Component {
   constructor(props) {
@@ -75,8 +73,8 @@ export default class likesScreen extends Component {
         };
 
         // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Customers/vendorRecommendation',
+        const response = await makeNetworkRequest(
+          'Customers/vendorRecommendation',
           params,
           true,
         );
@@ -129,8 +127,8 @@ export default class likesScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/followVendor',
+      const response = await makeNetworkRequest(
+        'Customers/followVendor',
         params,
         true,
       );

@@ -32,10 +32,9 @@ import ic_right_arrow from '../assets/icons/ic_right_arrow.png';
 // Validations
 import {isMobileNumber, isEmailAddress} from '../validations/FormValidator';
 
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
 import {checkPermission} from '../firebase_api/FirebaseAPI';
 import SmsRetriever from 'react-native-sms-retriever';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class UserLoginScreen extends Component {
   constructor(props) {
@@ -86,7 +85,7 @@ export default class UserLoginScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(BASE_URL + 'Customers/login', params);
+      const response = await makeNetworkRequest('Customers/login', params);
 
       // processing response
       if (response) {
@@ -145,27 +144,6 @@ export default class UserLoginScreen extends Component {
   handleSignup = () => {
     this.props.navigation.navigate('SignUp');
   };
-
-  // _onSmsListenerPressed = async () => {
-  //   try {
-  //     const registered = await SmsRetriever.startSmsRetriever();
-
-  //     if (registered) {
-  //       SmsRetriever.addSmsListener(this._onReceiveSms);
-  //     }
-
-  //     alert(`SMS Listener Registered: ${registered}`);
-  //   } catch (error) {
-  //     alert(`SMS Listener Error: ${JSON.stringify(error)}`);
-  //   }
-  // };
-
-  // // Handlers
-
-  // _onReceiveSms = (event) => {
-  //   alert(event.message);
-  //   SmsRetriever.removeSmsListener();
-  // };
 
   render() {
     const {isProcessing} = this.state;
@@ -231,6 +209,7 @@ const styles = StyleSheet.create({
     height: hp(5.5),
     backgroundColor: '#f2f1f1',
     marginBottom: wp(3),
+    // color: '#333',
   },
   arrowIcon: {
     width: wp(6),

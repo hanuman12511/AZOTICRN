@@ -49,7 +49,8 @@ navigator.geolocation = require('@react-native-community/geolocation');
 import {BASE_URL, makeRequest} from '../api/ApiInfo';
 
 // User Preference
-import {KEYS, getData, clearData} from '../api/UserPreference';
+import {KEYS, getData, clearData} from 'state/utils/UserPreference';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class AddAddressScreen extends Component {
   constructor(props) {
@@ -400,8 +401,8 @@ export default class AddAddressScreen extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/addAddress',
+      const response = await makeNetworkRequest(
+        'Customers/addAddress',
         params,
         true,
       );

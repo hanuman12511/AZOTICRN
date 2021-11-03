@@ -38,10 +38,9 @@ import GalleryTab from './CustomerHomeTabs/GalleryScreen';
 import MenuTab from './CustomerHomeTabs/MenuScreen';
 
 // UserPreference
-import {KEYS, storeData, getData, clearData} from '../api/UserPreference';
+import {KEYS, storeData, getData, clearData} from 'state/utils/UserPreference';
 
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
 
 // Redux
 import {connect} from 'react-redux';

@@ -14,12 +14,12 @@ import {showToast} from '../components/CustomToast';
 import basicStyles from '../styles/BasicStyles';
 
 //UserPreference
-import {clearData} from '../api/UserPreference';
+import {clearData} from 'state/utils/UserPreference';
 
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
 
 import {FacebookLoader} from 'react-native-easy-content-loader';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class OrderCancelledTab extends Component {
   constructor(props) {
@@ -48,8 +48,8 @@ export default class OrderCancelledTab extends Component {
       };
 
       // calling api
-      const response = await makeRequest(
-        BASE_URL + 'Customers/viewOrders',
+      const response = await makeNetworkRequest(
+        'Customers/viewOrders',
         params,
         true,
       );

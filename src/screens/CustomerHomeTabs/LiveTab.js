@@ -43,7 +43,7 @@ import ic_alphabetical_order2 from '../../assets/icons/ic_alphabetical_order2.pn
 import about_to_end from '../../assets/icons/about_to_end.png';
 
 // UserPreference
-import {KEYS, getData} from '../../api/UserPreference';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 // Redux
 import {connect} from 'react-redux';

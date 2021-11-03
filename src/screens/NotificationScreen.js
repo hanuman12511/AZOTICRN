@@ -18,16 +18,16 @@ import {showToast} from '../components/CustomToast';
 import basicStyles from '../styles/BasicStyles';
 
 //UserPreference
-import {getData, storeData, KEYS} from '../api/UserPreference';
+import {getData, storeData, KEYS} from 'state/utils/UserPreference';
 
 // API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
 
 import {
   ContentLoader,
   FacebookLoader,
   InstagramLoader,
 } from 'react-native-easy-content-loader';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class extends Component {
   constructor(props) {
@@ -69,8 +69,8 @@ export default class extends Component {
 
       if (!userInfo) {
         // calling api
-        response = await makeRequest(
-          BASE_URL + 'Notifications/notificationList',
+        response = await makeNetworkRequest(
+          'Notifications/notificationList',
           params,
         );
       } else if (userInfo) {
@@ -81,8 +81,8 @@ export default class extends Component {
         };
 
         // calling api
-        response = await makeRequest(
-          BASE_URL + 'Notifications/notificationList',
+        response = await makeNetworkRequest(
+          'Notifications/notificationList',
           params,
         );
       }
@@ -146,8 +146,8 @@ export default class extends Component {
           payloadId,
         };
         // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Notifications/getNotificationCount',
+        const response = await makeNetworkRequest(
+          'Notifications/getNotificationCount',
           params,
           true,
         );
@@ -185,8 +185,8 @@ export default class extends Component {
         };
 
         // calling api
-        const response = await makeRequest(
-          BASE_URL + 'Notifications/resetNotificationCount',
+        const response = await makeNetworkRequest(
+          'Notifications/resetNotificationCount',
           params,
           true,
         );

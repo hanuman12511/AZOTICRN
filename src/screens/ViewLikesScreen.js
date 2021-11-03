@@ -18,12 +18,10 @@ import AddCommentListComponent from '../components/AddCommentListComponent';
 import basicStyles from '../styles/BasicStyles';
 
 // UserPreference
-import {clearData} from '../api/UserPreference';
-
-// API
-import {BASE_URL, makeRequest} from '../api/ApiInfo';
+import {clearData} from 'state/utils/UserPreference';
 
 import {FacebookLoader} from 'react-native-easy-content-loader';
+import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
 export default class ViewLikesScreen extends Component {
   constructor(props) {
@@ -55,8 +53,8 @@ export default class ViewLikesScreen extends Component {
 
       // calling api
 
-      const response = await makeRequest(
-        BASE_URL + 'Customers/viewLikes',
+      const response = await makeNetworkRequest(
+        'Customers/viewLikes',
         params,
         true,
       );
