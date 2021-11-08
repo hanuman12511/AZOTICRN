@@ -515,7 +515,7 @@ class NewsFeeds extends Component {
 
         if (success) {
           const {message} = response;
-          // await this.fetchNewsFeeds();
+          await this.fetchNewsFeeds();
           showToast(message);
         } else {
           const {message, isAuthTokenExpired} = response;

@@ -11,6 +11,7 @@ import {
   RefreshControl,
   Platform,
   BackHandler,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import {
@@ -68,6 +69,7 @@ import {clearData, KEYS, getData, storeData} from 'state/utils/UserPreference';
 
 import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
+import RBSheet from 'react-native-raw-bottom-sheet';
 export default class MyAccountScreen extends Component {
   constructor(props) {
     super(props);
@@ -247,7 +249,8 @@ export default class MyAccountScreen extends Component {
   };
 
   handleMoreInfo = () => {
-    this.setState({editProfilePopup: true});
+    // this.setState({editProfilePopup: true});
+    this.RBSheet.open();
   };
 
   handleChangePassword = () => {
@@ -690,7 +693,7 @@ export default class MyAccountScreen extends Component {
           </ScrollView>
         </View>
 
-        <BottomModal
+        {/* <BottomModal
           visible={this.state.editProfilePopup}
           onTouchOutside={() => this.setState({editProfilePopup: false})}>
           <ModalContent
@@ -732,7 +735,65 @@ export default class MyAccountScreen extends Component {
               </ScrollView>
             </View>
           </ModalContent>
-        </BottomModal>
+        </BottomModal> */}
+
+        <RBSheet
+          ref={ref => {
+            this.RBSheet = ref;
+          }}
+          closeOnDragDown={true}
+          closeOnPressMask={false}
+          onClose={this.closePopup}
+          // height={hp(60)}
+          customStyles={{
+            wrapper: {
+              backgroundColor: 'rgba(0,0,0,0.5)',
+            },
+            container: {
+              minHeight: hp(50),
+              padding: wp(2),
+              borderTopLeftRadius: wp(4),
+              borderTopRightRadius: wp(4),
+            },
+            draggableIcon: {
+              backgroundColor: '#ff6000',
+            },
+          }}>
+          <TouchableWithoutFeedback style={styles.popupContainer}>
+            <ScrollView contentContainerStyle={[styles.popupContainerInner]}>
+              <View>
+                <Text>Name</Text>
+                <TextInput
+                  placeholder={name}
+                  placeholderTextColor="#333"
+                  style={styles.input}
+                  value={this.state.name}
+                  onChangeText={e => this.setState({name: e})}
+                />
+              </View>
+
+              <View>
+                <Text>Bio</Text>
+                <TextInput
+                  placeholder="Enter Bio"
+                  multiline
+                  placeholderTextColor="#333"
+                  style={styles.inputBig}
+                  value={this.state.bio}
+                  onChangeText={e => this.setState({bio: e})}
+                />
+              </View>
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={this.handleUpdateProfile}>
+                <Text style={[basicStyles.heading, basicStyles.whiteColor]}>
+                  Save Changes
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </TouchableWithoutFeedback>
+        </RBSheet>
 
         {changePasswordPopup && (
           <ChangePasswordPopup

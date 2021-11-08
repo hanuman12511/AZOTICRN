@@ -867,6 +867,7 @@ class FarmsMenuScreen extends Component {
 
   handleImagePick = async () => {
     try {
+      showToast('You Can Select Multiple Images');
       // Pick a single file
       const response = await DocumentPicker.pickMultiple({
         type: [DocumentPicker.types.images, DocumentPicker.types.allFiles],
@@ -1380,10 +1381,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   quantity: {
-    borderWidth: 0.5,
+    borderWidth: 0.7,
     borderColor: '#3334',
-    height: 25,
-    width: 40,
+    height: hp(3.2),
+    width: wp(7),
     lineHeight: 25,
     textAlign: 'center',
   },

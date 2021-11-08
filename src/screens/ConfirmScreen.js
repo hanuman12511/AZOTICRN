@@ -27,7 +27,18 @@ import {
 } from 'react-native-responsive-screen';
 import basicStyles from '../styles/BasicStyles';
 
-export default class CustomLoader extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {homeSelectors, homeOperations} from 'state/ducks/home';
+import {cartSelectors, cartOperations} from 'state/ducks/cart';
+import {
+  cartCountSelectors,
+  cartCountOperations,
+} from 'state/ducks/cartItemCount';
+import {KEYS, getData} from 'state/utils/UserPreference';
+
+class ConfirmScreen extends Component {
   constructor(props) {
     super(props);
 
@@ -70,6 +81,7 @@ export default class CustomLoader extends Component {
       this.backAction,
     );
 
+    this.fetchCartCount();
     this.handleAnimation();
     setInterval(() => {
       this.setState({
@@ -101,6 +113,53 @@ export default class CustomLoader extends Component {
 
   handleHome = () => {
     this.props.navigation.navigate('NewsNavS');
+  };
+
+  fetchCartCount = async () => {
+    try {
+      // starting loader
+      // this.setState({isLoading: true});
+
+      const deviceInfo = await getData(KEYS.DEVICE_UNIQUE_ID);
+
+      if (!deviceInfo) {
+        return;
+      }
+
+      const {deviceId} = deviceInfo;
+
+      const params = {
+        deviceId,
+      };
+
+      // calling api
+      await this.props.getCartCount('Customers/cartCount', params);
+
+      const {isGetCartCount: response} = this.props;
+
+      // Processing Response
+      if (response) {
+        const {success} = response;
+
+        if (success) {
+          const {cartCount: cartItemCount} = response;
+          this.props.saveCartCount(cartItemCount);
+          // // await storeData(KEYS.CART_ITEM_COUNT, {cartItemCount});
+
+          this.setState({
+            cartItemCount,
+          });
+        }
+      } else {
+        this.setState({
+          isProcessing: false,
+          isLoading: false,
+        });
+        showToast('Network Request Error...');
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   renderItem = ({item}) => (
@@ -296,6 +355,21 @@ export default class CustomLoader extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+
+  isGetCartCount: cartSelectors.isGetCartCount(state),
+  getCartItemCount: cartCountSelectors.getCartItemCount(state),
+});
+
+const mapDispatchToProps = {
+  saveCartCount: cartCountOperations.saveCartCount,
+  getCartCount: cartOperations.getCartCount,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ConfirmScreen);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

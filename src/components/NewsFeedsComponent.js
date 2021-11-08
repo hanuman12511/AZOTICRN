@@ -43,10 +43,8 @@ import {KEYS, getData} from 'state/utils/UserPreference';
 export default class NewsFeedComponent extends Component {
   constructor(props) {
     super(props);
-    const {likeStatus} = props.item;
-    console.log('In Prop', likeStatus);
+
     this.state = {
-      likeStatus,
       isLike: false,
       isLoggedIn: false,
       isMenuVisible2: false,
@@ -65,9 +63,10 @@ export default class NewsFeedComponent extends Component {
   };
 
   handleLike = async () => {
+    console.log('Im pressed');
     const {handleLikeUnlike} = this.props;
-    let {likeStatus} = this.state;
-    const {postId} = this.props.item;
+
+    let {postId, likeStatus} = this.props.item;
 
     const userInfo = await getData(KEYS.USER_INFO);
 
@@ -103,7 +102,7 @@ export default class NewsFeedComponent extends Component {
 
   handleLikeScreen = async () => {
     const userInfo = await getData(KEYS.USER_INFO);
-    console.log(userInfo);
+
     if (!userInfo) {
       Alert.alert(
         'Alert!',
@@ -234,10 +233,11 @@ export default class NewsFeedComponent extends Component {
       comments,
       shareCount,
       likedBy,
+      likeStatus,
     } = this.props.item;
 
-    const {likeStatus, isLike, isLoggedIn} = this.state;
-    console.log(description, 'In Ren', likeStatus);
+    const {isLike, isLoggedIn} = this.state;
+
     return (
       <View style={[basicStyles.container, styles.feedsContainer]}>
         <TouchableOpacity

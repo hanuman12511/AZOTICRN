@@ -19,14 +19,9 @@ export default class GalTabCommentComponent extends Component {
   }
 
   render() {
-    const {
-      image,
-      productId,
-      productName,
-      quantity,
-      rate,
-      totalAmount,
-    } = this.props.item;
+    const {image, productId, productName, quantity, rate, totalAmount} =
+      this.props.item;
+
     return (
       <View
         style={[
@@ -43,7 +38,7 @@ export default class GalTabCommentComponent extends Component {
               ({quantity}x{rate})
             </Text>
             <Text style={[basicStyles.text, basicStyles.textBold]}>
-              ₹ {totalAmount}
+              ₹ {Number.parseFloat(totalAmount).toFixed(2)}
             </Text>
           </View>
         </View>

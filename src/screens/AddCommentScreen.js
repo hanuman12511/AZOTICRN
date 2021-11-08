@@ -31,7 +31,6 @@ import AddCommentListComponent from '../components/AddCommentListComponent';
 import Modal, {ModalContent, BottomModal} from 'react-native-modals';
 
 //Images
-import your_story from '../assets/images/your_story.png';
 
 // Styles
 import basicStyles from '../styles/BasicStyles';
@@ -415,9 +414,8 @@ class AddCommentScreen extends Component {
           showAccountIcon
         />
         <KeyboardAwareScrollView
-          enableOnAndroid
           contentContainerStyle={basicStyles.flexOne}
-          keyboardShouldPersistTaps="handled"
+          keyboardShouldPersistTaps="always"
           showsVerticalScrollIndicator={false}>
           <View style={basicStyles.mainContainer}>
             {contentLoading === true ? (
@@ -427,7 +425,7 @@ class AddCommentScreen extends Component {
                 <FacebookLoader active loading={contentLoading} />
               </View>
             ) : (
-              <View style={[basicStyles.flexOne, {height: hp(75)}]}>
+              <View>
                 {comments ? (
                   <FlatList
                     data={comments}
