@@ -12,6 +12,7 @@ import {
   InteractionManager,
   Keyboard,
   BackHandler,
+  ScrollView,
 } from 'react-native';
 
 // Libraries
@@ -143,6 +144,11 @@ class AddCommentScreen extends Component {
             contentLoading: false,
             isListRefreshing: false,
           });
+          const fetchNewsFeeds = await this.props.navigation.getParam(
+            'fetchNewsFeeds',
+          );
+
+          await fetchNewsFeeds();
         } else {
           const {message, isAuthTokenExpired} = response;
 
@@ -230,11 +236,6 @@ class AddCommentScreen extends Component {
             placeholderUpdate: 'Enter comment',
           });
           await this.fetchComments();
-          const fetchNewsFeeds = await this.props.navigation.getParam(
-            'fetchNewsFeeds',
-          );
-
-          await fetchNewsFeeds();
 
           showToast(message);
         } else {
@@ -425,7 +426,7 @@ class AddCommentScreen extends Component {
                 <FacebookLoader active loading={contentLoading} />
               </View>
             ) : (
-              <View>
+              <View style={[basicStyles.flexOne, {height: hp(75)}]}>
                 {comments ? (
                   <FlatList
                     data={comments}
@@ -448,7 +449,6 @@ class AddCommentScreen extends Component {
               </View>
             )}
           </View>
-
           <View style={[styles.messageContainer]}>
             <Image
               source={{uri: userImage}}

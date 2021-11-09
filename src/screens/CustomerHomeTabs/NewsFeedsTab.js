@@ -308,7 +308,7 @@ class NewsFeeds extends Component {
   handleShare = async referralInfo => {
     try {
       const {shareInfo} = referralInfo;
-      const {title, description, appUrl, image} = shareInfo;
+      const {title, message, androidUrl, iosUrl, image} = shareInfo;
       const {url: imageUrl, extension} = image;
 
       const base64ImageData = await this.encodeImageToBase64(imageUrl);
@@ -319,7 +319,7 @@ class NewsFeeds extends Component {
       const shareOptions = {
         title,
         subject: title,
-        message: `${title}\n${description}\n${appUrl}`,
+        message: `${title}\n${message}\n${'Android'}\n${androidUrl}\n${'iOS'}\n${iosUrl}`,
         url: `data:image/${extension};base64,${base64ImageData}`,
       };
 
@@ -548,6 +548,7 @@ class NewsFeeds extends Component {
   reportPopClose = () => {
     this.setState({isReportPop: false});
   };
+
   render() {
     const {liveStories, contentLoading, newsFeeds, cartItemCount, status} =
       this.state;

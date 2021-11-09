@@ -63,7 +63,6 @@ export default class NewsFeedComponent extends Component {
   };
 
   handleLike = async () => {
-    console.log('Im pressed');
     const {handleLikeUnlike} = this.props;
 
     let {postId, likeStatus} = this.props.item;

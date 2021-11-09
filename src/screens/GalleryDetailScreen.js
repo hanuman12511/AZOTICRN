@@ -19,13 +19,17 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-// VectorIcons
+// Libraries
+import Share from 'react-native-share';
+import RNFetchBlob from 'rn-fetch-blob';
+import DoubleClick from 'rn-double-click';
 
 // icons
 import ic_like_fill from '../assets/icons/ic_like_fill.png';
 import ic_like_border from '../assets/icons/ic_like_border.png';
 import ic_comment_border from '../assets/icons/ic_comment_border.png';
 import ic_send from '../assets/icons/ic_send.png';
+import ic_white_heart from '../assets/icons/ic_white_heart.png';
 
 // Style
 import basicStyles from '../styles/BasicStyles';
@@ -33,6 +37,7 @@ import basicStyles from '../styles/BasicStyles';
 // Components
 import HeaderComponent from '../components/HeaderComponent';
 import GalTabCommentComponent from '../components/GalTabCommentComponent';
+import {InstagramLoader} from 'react-native-easy-content-loader';
 
 // UserPreference
 import {KEYS, getData} from 'state/utils/UserPreference';
@@ -42,28 +47,19 @@ import {connect} from 'react-redux';
 import {loaderSelectors} from 'state/ducks/loader';
 import {postsSelectors, postsOperations} from 'state/ducks/posts';
 import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
+import ProcessingLoader from '../components/ProcessingLoader';
+import {showToast} from '../components/CustomToast';
 
 class GalleryDetailScreen extends Component {
   constructor(props) {
     super(props);
 
     const item = props.navigation.getParam('item', null);
-
-    const {
-      vendorName,
-      city,
-      vendorImage,
-      mediaUrl,
-      likes,
-      description,
-      commentCount,
-      comments,
-      postTime,
-      likedBy,
-      likeStatus,
-    } = item;
+    this.item = item;
 
     this.state = {
+      isLike: false,
+      isProcessing: false,
       vendorName: '',
       city: '',
       vendorImage: null,
@@ -73,7 +69,8 @@ class GalleryDetailScreen extends Component {
       comments: '',
       postTime: '',
       likedBy: '',
-      likeStatus,
+      likeStatus: false,
+      contentLoading: true,
     };
   }
 
@@ -82,6 +79,7 @@ class GalleryDetailScreen extends Component {
       'hardwareBackPress',
       this.backAction,
     );
+    this.fetchPostDetail();
   }
 
   backAction = () => {
@@ -115,7 +113,10 @@ class GalleryDetailScreen extends Component {
     } else {
       const item = this.props.navigation.getParam('item', null);
 
-      this.props.navigation.navigate('Comment', {item});
+      this.props.navigation.navigate('Comment', {
+        item,
+        fetchNewsFeeds: this.fetchPostDetail,
+      });
     }
   };
 
@@ -131,35 +132,21 @@ class GalleryDetailScreen extends Component {
     />
   );
 
-  handleLikeUnlike = async () => {
+  fetchPostDetail = async () => {
     try {
       const item = this.props.navigation.getParam('item', null);
 
-      const {
-        vendorName,
-        city,
-        vendorImage,
-        mediaUrl,
-        likes,
-        description,
-        commentCount,
-        comments,
-        postTime,
-        likedBy,
-        likeStatus,
-        postId,
-      } = item;
+      const {postId} = item;
       // starting loader
       // this.setState({isProcessing: true});
 
       const params = {
         postId,
-        like: !likeStatus,
       };
 
-      await this.props.likePost('Customers/likePost', params, true);
+      await this.props.postDetail('Customers/postDetail', params, true);
 
-      const {isLikePost: response} = this.props;
+      const {isPostDetail: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -170,10 +157,46 @@ class GalleryDetailScreen extends Component {
         });
 
         if (success) {
-          const {like} = response;
-          this.setState({likeStatus: like});
-          // await this.fetchNewsFeeds();
-          // showToast(message);
+          const {posts} = response;
+          const {
+            postId,
+            vendorId,
+            vendorName,
+            vendorAddress,
+            follow,
+            avgRatings,
+            followCount,
+            likesCount,
+            ratingCount,
+            vendorImage,
+            city,
+            description,
+            feedDate,
+            mediaType,
+            mediaUrl,
+            likes,
+            likeStatus,
+            likedBy,
+            comments,
+            shareCount,
+          } = posts;
+
+          this.setState({
+            vendorName,
+            likesCount,
+            ratingCount,
+            vendorImage,
+            city,
+            description,
+            feedDate,
+            mediaType,
+            mediaUrl,
+            likes,
+            likeStatus,
+            likedBy,
+            comments,
+            contentLoading: false,
+          });
         } else {
           const {isAuthTokenExpired} = response;
 
@@ -201,27 +224,257 @@ class GalleryDetailScreen extends Component {
     }
   };
 
+  handleLikeUnlike = async () => {
+    try {
+      const {postId} = this.item;
+      const {likeStatus} = this.state;
+
+      const params = {
+        postId,
+        like: !likeStatus,
+      };
+
+      await this.props.likePost('Customers/likePost', params, true);
+
+      const {isLikePost: response} = this.props;
+
+      // Processing Response
+      if (response) {
+        const {success, message} = response;
+
+        this.setState({
+          isProcessing: false,
+          isLike: false,
+        });
+
+        if (success) {
+          await this.fetchPostDetail();
+          showToast(message);
+        } else {
+          const {isAuthTokenExpired} = response;
+
+          if (isAuthTokenExpired === true) {
+            Alert.alert(
+              'Session Expired',
+              'Login Again to Continue!',
+              [{text: 'OK', onPress: this.handleTokenExpire}],
+              {
+                cancelable: false,
+              },
+            );
+            return;
+          }
+        }
+      } else {
+        this.setState({
+          isProcessing: false,
+          isLoading: false,
+        });
+        showToast('Network Request Error...');
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  handleSharePost = async () => {
+    try {
+      // starting loader
+      this.setState({isProcessing: true});
+      const userInfo = await getData(KEYS.USER_INFO);
+      if (!userInfo) {
+        Alert.alert(
+          'Alert!',
+          'You Need to Login First.\nPress LOGIN to Continue!',
+          [
+            {text: 'NO', style: 'cancel'},
+            {text: 'LOGIN', onPress: this.onLoginPress},
+          ],
+          {
+            cancelable: false,
+          },
+        );
+
+        return;
+      }
+
+      const {postId} = this.item;
+
+      const params = {
+        postId,
+      };
+
+      // calling api
+      await this.props.sharePost('Customers/sharePost', params);
+
+      const {isSharePost: response} = this.props;
+
+      // Processing Response
+      if (response) {
+        this.setState({
+          isLoading: false,
+          isProcessing: false,
+          contentLoading: false,
+          isListRefreshing: false,
+        });
+
+        const {success, isAuthTokenExpired} = response;
+
+        if (success) {
+          const {output} = response;
+
+          await this.handleShare(output);
+        } else {
+          if (isAuthTokenExpired === true) {
+            Alert.alert(
+              'Session Expired',
+              'Login Again to Continue!',
+              [{text: 'OK', onPress: this.handleTokenExpire}],
+              {
+                cancelable: false,
+              },
+            );
+            // this.handleTokenExpire();
+          }
+        }
+      } else {
+        this.setState({
+          isProcessing: false,
+          isLoading: false,
+          isListRefreshing: false,
+        });
+        showToast('Network Request Error...');
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  handleShare = async referralInfo => {
+    try {
+      const {shareInfo} = referralInfo;
+      const {title, message, androidUrl, iosUrl, image} = shareInfo;
+      const {url: imageUrl, extension} = image;
+
+      const base64ImageData = await this.encodeImageToBase64(imageUrl);
+      if (!base64ImageData) {
+        return;
+      }
+
+      const shareOptions = {
+        title,
+        subject: title,
+        message: `${title}\n${message}\n${'Android'}\n${androidUrl}\n${'iOS'}\n${iosUrl}`,
+        url: `data:image/${extension};base64,${base64ImageData}`,
+      };
+
+      // stopping loader
+      this.setState({isProcessing: false});
+
+      await Share.open(shareOptions);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  encodeImageToBase64 = async imageUrl => {
+    try {
+      const fs = RNFetchBlob.fs;
+      const rnFetchBlob = RNFetchBlob.config({fileCache: true});
+
+      const downloadedImage = await rnFetchBlob.fetch('GET', imageUrl);
+      const imagePath = downloadedImage.path();
+      const encodedImage = await downloadedImage.readFile('base64');
+      await fs.unlink(imagePath);
+      return encodedImage;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  };
+
+  handleDoubleTap = async () => {
+    const userInfo = await getData(KEYS.USER_INFO);
+    if (this.state.likeStatus === true) {
+      return;
+    }
+
+    if (!userInfo) {
+      Alert.alert(
+        'Alert!',
+        'You Need To Login?',
+        [
+          {text: 'Cancel', style: 'cancel'},
+          {text: 'Login', onPress: this.onLoginPress},
+        ],
+        {
+          cancelable: false,
+        },
+      );
+      return;
+    }
+
+    this.setState({isLike: true});
+
+    await this.handleLikeUnlike();
+  };
+
   keyExtractor = (item, index) => index.toString();
 
   itemSeparator = () => <View style={styles.separator} />;
 
   render() {
-    const item = this.props.navigation.getParam('item', null);
+    const {contentLoading} = this.state;
+
+    if (contentLoading) {
+      return (
+        <SafeAreaView style={[styles.container]}>
+          <HeaderComponent
+            headerTitle="Vendors"
+            nav={this.props.navigation}
+            navAction="back"
+            showCartIcon
+            showAccountIcon
+          />
+          <View style={{flex: 1, borderTopWidth: 0.7, borderTopColor: '#888'}}>
+            <InstagramLoader active loading={contentLoading} />
+            <InstagramLoader active loading={contentLoading} />
+          </View>
+        </SafeAreaView>
+      );
+    }
+
+    // const {
+    //   vendorName,
+    //   city,
+    //   vendorImage,
+    //   mediaUrl,
+    //   likes,
+    //   description,
+    //   commentCount,
+    //   comments,
+    //   postTime,
+    //   likedBy,
+    //   likeStatus,
+    // } = item;
 
     const {
       vendorName,
-      city,
+      likesCount,
+      ratingCount,
       vendorImage,
+      city,
+      description,
+      feedDate: postTime,
+      mediaType,
       mediaUrl,
       likes,
-      description,
-      commentCount,
-      comments,
-      postTime,
-      likedBy,
       likeStatus,
-    } = item;
-    console.log('items data', item);
+      likedBy,
+      comments: commentCount,
+      isLike,
+    } = this.state;
+
     return (
       <SafeAreaView style={styles.container}>
         <HeaderComponent
@@ -268,17 +521,29 @@ class GalleryDetailScreen extends Component {
             style={[
               basicStyles.directionRow,
               basicStyles.justifyCenter,
+              basicStyles.alignCenter,
               {borderWidth: 0.3, borderColor: '#888'},
             ]}>
-            {/* <Image
-              source={vendorImage}
-              resizeMode="cover"
-              style={styles.imageBig}
-            /> */}
             <ImageSlider
               images={mediaUrl}
               style={{width: wp(100), aspectRatio: 1 / 1}}
             />
+
+            <DoubleClick
+              style={styles.likeHeartStyle}
+              onClick={this.handleDoubleTap}>
+              {isLike ? (
+                <View>
+                  <Image
+                    source={ic_white_heart}
+                    style={styles.activeHeart}
+                    resizeMode="cover"
+                  />
+                </View>
+              ) : (
+                <View style={basicStyles.flexOne} />
+              )}
+            </DoubleClick>
           </View>
 
           <View
@@ -287,7 +552,7 @@ class GalleryDetailScreen extends Component {
               basicStyles.paddingHorizontal,
               basicStyles.paddingHalfVentricle,
             ]}>
-            {/* {this.state.likeStatus ? (
+            {likeStatus ? (
               <TouchableOpacity
                 onPress={this.handleLikeUnlike}
                 style={[
@@ -301,7 +566,7 @@ class GalleryDetailScreen extends Component {
                   style={basicStyles.iconRowSmallMargin}
                 />
                 <Text style={[basicStyles.text, styles.activeText]}>
-                  {likes}
+                  {likesCount}
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -317,55 +582,41 @@ class GalleryDetailScreen extends Component {
                   resizeMode="cover"
                   style={basicStyles.iconRowSmallMargin}
                 />
-                <Text style={[basicStyles.text]}>{likes}</Text>
+                <Text style={[basicStyles.text]}>{likesCount}</Text>
               </TouchableOpacity>
-            )} */}
-
-            {this.state.likeStatus ? (
-              <View
-                style={[
-                  basicStyles.directionRow,
-                  basicStyles.alignCenter,
-                  styles.likeBtnActive,
-                ]}>
-                <Image
-                  source={ic_like_fill}
-                  resizeMode="cover"
-                  style={basicStyles.iconRowSmallMargin}
-                />
-                <Text style={[basicStyles.text, styles.activeText]}>
-                  {likes}
-                </Text>
-              </View>
-            ) : (
-              <View
-                style={[
-                  basicStyles.directionRow,
-                  basicStyles.alignCenter,
-                  styles.likeBtnInActive,
-                ]}>
-                <Image
-                  source={ic_like_border}
-                  resizeMode="cover"
-                  style={basicStyles.iconRowSmallMargin}
-                />
-                <Text style={[basicStyles.text]}>{likes}</Text>
-              </View>
             )}
 
-            {/* <View
-              style={[
-                basicStyles.directionRow,
-                basicStyles.alignCenter,
-                styles.likeBtnActive,
-              ]}>
-              <Image
-                source={ic_like_fill}
-                resizeMode="cover"
-                style={basicStyles.iconRowSmallMargin}
-              />
-              <Text style={[basicStyles.text, styles.activeText]}>{likes}</Text>
-            </View> */}
+            {/* {this.state.likeStatus ? (
+              <View
+                style={[
+                  basicStyles.directionRow,
+                  basicStyles.alignCenter,
+                  styles.likeBtnActive,
+                ]}>
+                <Image
+                  source={ic_like_fill}
+                  resizeMode="cover"
+                  style={basicStyles.iconRowSmallMargin}
+                />
+                <Text style={[basicStyles.text, styles.activeText]}>
+                  {likes}
+                </Text>
+              </View>
+            ) : (
+              <View
+                style={[
+                  basicStyles.directionRow,
+                  basicStyles.alignCenter,
+                  styles.likeBtnInActive,
+                ]}>
+                <Image
+                  source={ic_like_border}
+                  resizeMode="cover"
+                  style={basicStyles.iconRowSmallMargin}
+                />
+                <Text style={[basicStyles.text]}>{likes}</Text>
+              </View>
+            )} */}
 
             <TouchableOpacity
               onPress={this.handleCommentScreen}
@@ -383,7 +634,8 @@ class GalleryDetailScreen extends Component {
               <Text style={basicStyles.text}>{commentCount}</Text>
             </TouchableOpacity>
 
-            <View
+            <TouchableOpacity
+              onPress={this.handleSharePost}
               style={[
                 basicStyles.marginRight,
                 basicStyles.directionRow,
@@ -394,8 +646,7 @@ class GalleryDetailScreen extends Component {
                 resizeMode="cover"
                 style={basicStyles.iconRowSmallMargin}
               />
-              {/* <Text style={basicStyles.text}>11</Text> */}
-            </View>
+            </TouchableOpacity>
           </View>
 
           <Text style={[basicStyles.text, basicStyles.paddingHorizontal]}>
@@ -415,7 +666,7 @@ class GalleryDetailScreen extends Component {
               All Comments ({commentCount})
             </Text>
           </TouchableOpacity>
-
+          {/* 
           <FlatList
             data={comments}
             renderItem={this.renderItem}
@@ -423,8 +674,9 @@ class GalleryDetailScreen extends Component {
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={this.itemSeparator}
             contentContainerStyle={styles.listContainer}
-          />
+          /> */}
         </ScrollView>
+        {this.state.isProcessing && <ProcessingLoader />}
       </SafeAreaView>
     );
   }
@@ -436,6 +688,7 @@ const mapDispatchToProps = {
   reportOrBlock: postsOperations.reportOrBlock,
   likePost: postsOperations.likePost,
   sharePost: postsOperations.sharePost,
+  postDetail: postsOperations.postDetail,
 };
 
 const mapStateToProps = state => ({
@@ -445,6 +698,7 @@ const mapStateToProps = state => ({
   isReportOrBlock: postsSelectors.isReportOrBlock(state),
   isLikePost: postsSelectors.isLikePost(state),
   isSharePost: postsSelectors.isSharePost(state),
+  isPostDetail: postsSelectors.isPostDetail(state),
 });
 
 export default connect(
@@ -500,5 +754,22 @@ const styles = StyleSheet.create({
   commentContainer: {
     borderBottomWidth: 4,
     borderBottomColor: '#ccc4',
+  },
+  likeHeartStyle: {
+    // borderWidth: 5,
+    // borderColor: '#000',
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginVertical: hp(15),
+    top: 0,
+    bottom: 0,
+    width: wp(40),
+    aspectRatio: 1.4 / 1,
+  },
+  activeHeart: {
+    height: hp(10),
+    aspectRatio: 1 / 1,
   },
 });

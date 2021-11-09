@@ -45,8 +45,11 @@ import {KEYS, storeData, getData, clearData} from 'state/utils/UserPreference';
 // Redux
 import {connect} from 'react-redux';
 import {loaderSelectors} from 'state/ducks/loader';
-
 import {postsSelectors, postsOperations} from 'state/ducks/posts';
+import {
+  vendorsFreshSelectors,
+  vendorsFreshOperations,
+} from 'state/ducks/vendorsFresh';
 
 class CusFarmsPage extends Component {
   constructor(props) {
@@ -465,7 +468,12 @@ class CusFarmsPage extends Component {
       };
 
       // calling api
-      await this.props.followVendor('Customers/followVendor', null, true, true);
+      await this.props.followVendor(
+        'Customers/followVendor',
+        params,
+        true,
+        false,
+      );
 
       const {isFollowVendor: response} = this.props;
       // Processing Response
@@ -480,7 +488,7 @@ class CusFarmsPage extends Component {
             null,
           );
 
-          refreshCallback();
+          await refreshCallback();
         } else {
           const {isAuthTokenExpired} = response;
           if (isAuthTokenExpired === true) {
@@ -705,6 +713,7 @@ const mapStateToProps = state => ({
   isAddReaction: postsSelectors.isAddReaction(state),
   isCommentPost: postsSelectors.isCommentPost(state),
   isReportOrBlock: postsSelectors.isReportOrBlock(state),
+  isFollowVendor: vendorsFreshSelectors.isFollowVendor(state),
 });
 
 const mapDispatchToProps = {
@@ -712,6 +721,7 @@ const mapDispatchToProps = {
   addReaction: postsOperations.addReaction,
   commentPost: postsOperations.commentPost,
   reportOrBlock: postsOperations.reportOrBlock,
+  followVendor: vendorsFreshOperations.followVendor,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CusFarmsPage);

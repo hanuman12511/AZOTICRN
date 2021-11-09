@@ -222,7 +222,12 @@ class CusVendorsPage extends Component {
       };
 
       // calling api
-      await this.props.followVendor('Customers/followVendor', null, true, true);
+      await this.props.followVendor(
+        'Customers/followVendor',
+        params,
+        true,
+        false,
+      );
 
       const {isFollowVendor: response} = this.props;
 

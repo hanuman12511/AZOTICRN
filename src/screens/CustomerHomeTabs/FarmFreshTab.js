@@ -308,7 +308,6 @@ class FarmFreshTab extends Component {
       item={item}
       nav={this.props.navigation}
       handleFollowVendor={this.handleFollowVendor}
-      fetchCartCount={this.fetchCartCount}
       fetchFoodVendors={this.fetchFoodVendors}
     />
   );

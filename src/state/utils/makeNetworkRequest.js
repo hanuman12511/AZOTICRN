@@ -27,8 +27,6 @@ export const makeNetworkRequest = async (
   sendAuthorizationToken = false,
   isContentTypeJSON = false,
 ) => {
-  // console.log(url, params, sendAuthorizationToken, isContentTypeJSON);
-
   try {
     // request info
     let info = {};
@@ -40,8 +38,6 @@ export const makeNetworkRequest = async (
       if (sendAuthorizationToken) {
         // fetching userInfo
         const userInfo = await getData(KEYS.USER_INFO);
-
-        console.log(userInfo);
 
         if (!userInfo) {
           return null;
@@ -109,7 +105,7 @@ export const makeNetworkRequest = async (
     }
 
     const response = await AXIOS.request(info);
-    console.log('Request Result:', response);
+    // console.log('Request Result:', response);
     // console.log('Request URLll:', BASE_URL + url);
     // console.log('Request Info:', info);
 

@@ -32,8 +32,6 @@ export const commentPost = (url, params, isToken, isJson) => async dispatch => {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(url, params, isToken, isJson);
 
-    console.log(response);
-
     if (response) {
       const {success} = response;
 
@@ -83,7 +81,6 @@ export const newsFeed = (url, params, isToken, isJson) => async dispatch => {
   try {
     // dispatch(loaderActions.processing(true));
     const response = await makeNetworkRequest(url, params, isToken, isJson);
-    console.log('Response', response);
     if (response) {
       const {success} = response;
 
@@ -242,6 +239,31 @@ export const addReaction = (url, params, isToken, isJson) => async dispatch => {
 
       if (success) {
         dispatch(actions.addReaction(response));
+        dispatch(loaderActions.processing(false));
+      } else {
+        dispatch(actions.error(response));
+        dispatch(loaderActions.processing(false));
+      }
+    } else {
+      dispatch(actions.error(null));
+      dispatch(loaderActions.processing(false));
+    }
+  } catch (error) {
+    dispatch(actions.error(error));
+    dispatch(loaderActions.processing(false));
+  }
+};
+
+export const postDetail = (url, params, isToken, isJson) => async dispatch => {
+  try {
+    // dispatch(loaderActions.processing(true));
+    const response = await makeNetworkRequest(url, params, isToken, isJson);
+
+    if (response) {
+      const {success} = response;
+
+      if (success) {
+        dispatch(actions.postDetail(response));
         dispatch(loaderActions.processing(false));
       } else {
         dispatch(actions.error(response));

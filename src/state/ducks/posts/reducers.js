@@ -1,5 +1,5 @@
-import * as types from "./types";
-import { combineReducers } from "redux";
+import * as types from './types';
+import {combineReducers} from 'redux';
 
 const liveStoriesReducer = (state = {}, action) => {
   switch (action.type) {
@@ -101,6 +101,16 @@ const addReactionReducer = (state = {}, action) => {
       return state;
   }
 };
+const postDetailReducer = (state = {}, action) => {
+  switch (action.type) {
+    case types.POST_DETAIL:
+      return action.payload;
+    case types.ERROR:
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
 const reducer = combineReducers({
   liveStories: liveStoriesReducer,
@@ -113,6 +123,7 @@ const reducer = combineReducers({
   commentDelete: commentDeleteReducer,
   reportOrBlock: reportOrBlockReducer,
   addReaction: addReactionReducer,
+  postDetail: postDetailReducer,
 });
 
 export default reducer;

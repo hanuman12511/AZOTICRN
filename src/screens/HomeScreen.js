@@ -567,7 +567,7 @@ class HomeScreen extends Component {
   handleFeed = async () => {
     let {tabActive, activeTabsArray} = this.state;
     activeTabsArray.push(tabActive);
-    console.log(activeTabsArray);
+
     await this.setState({preActiveTab: tabActive, activeTabsArray});
 
     this.setState({tabActive: 'Feed'});
@@ -576,7 +576,7 @@ class HomeScreen extends Component {
   handleLive = async () => {
     let {tabActive, activeTabsArray} = this.state;
     activeTabsArray.push(tabActive);
-    console.log(activeTabsArray);
+
     await this.setState({preActiveTab: tabActive, activeTabsArray});
 
     this.setState({tabActive: 'Live'});
@@ -584,7 +584,7 @@ class HomeScreen extends Component {
   handleVendor = async () => {
     let {tabActive, activeTabsArray} = this.state;
     activeTabsArray.push(tabActive);
-    console.log(activeTabsArray);
+
     await this.setState({preActiveTab: tabActive, activeTabsArray});
 
     this.setState({tabActive: 'Vendor'});
@@ -592,7 +592,7 @@ class HomeScreen extends Component {
   handleFarm = async () => {
     let {tabActive, activeTabsArray} = this.state;
     activeTabsArray.push(tabActive);
-    console.log(activeTabsArray);
+
     await this.setState({preActiveTab: tabActive, activeTabsArray});
 
     this.setState({tabActive: 'Farm'});

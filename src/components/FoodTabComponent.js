@@ -87,9 +87,8 @@ export default class FoodTabComponent extends Component {
   };
 
   refreshCallback = async () => {
-    const {fetchCartCount, fetchFoodVendors} = this.props;
+    const {fetchFoodVendors} = this.props;
 
-    await fetchCartCount();
     await fetchFoodVendors();
   };
 
@@ -116,20 +115,13 @@ export default class FoodTabComponent extends Component {
     const {followStatus} = this.state;
 
     const orderContainerMain = {
-      // backgroundColor: '#fff',
-      // borderBottomWidth: 0.4,
-      // borderBottomColor: '#888',
-      // borderBottomRightRadius: wp(2.5),
-      // borderTopLeftRadius: wp(2.5),
       padding: wp(4),
-      // elevation: 5,
     };
 
     return (
       <TouchableOpacity
         style={orderContainerMain}
         onPress={this.handleVendorPage}>
-        {/* <Image source={ic_plus} resizeMode="cover" style={styles.imageStyle} /> */}
         <View style={styles.orderContainer}>
           <Image
             source={{uri: vendorImage}}
@@ -139,32 +131,11 @@ export default class FoodTabComponent extends Component {
 
           <View style={styles.contentContainer}>
             <View style={styles.nameContainer}>
-              <Text style={[styles.nameText]}>
-                {vendorName}
-                {/* Kake di Hatti */}
-              </Text>
+              <Text style={[styles.nameText]}>{vendorName}</Text>
 
-              <View
-                style={[
-                  basicStyles.directionRow,
-                  basicStyles.alignCenter,
-                  // basicStyles.paddingVentricle,
-                ]}>
-                {/* <StarRating
-                    disabled={true}
-                    maxStars={5}
-                    rating={myRating}
-                    fullStar={ic_rate_star}
-                    halfStar={ic_half_rating}
-                    emptyStar={ic_no_rate}
-                    starSize={12}
-                  /> */}
-
+              <View style={[basicStyles.directionRow, basicStyles.alignCenter]}>
                 <View style={styles.stars}>
-                  <Text style={[styles.rating]}>
-                    {avgRatings}
-                    {/* 4.5 */}
-                  </Text>
+                  <Text style={[styles.rating]}>{avgRatings}</Text>
                   <Image
                     source={ic_star_white}
                     resizeMode="cover"
@@ -178,10 +149,7 @@ export default class FoodTabComponent extends Component {
               </View>
             </View>
 
-            <Text style={styles.descText}>
-              {bio}
-              {/* Specialises in Chicken, Mutton and Other Mughlai Dishes. */}
-            </Text>
+            <Text style={styles.descText}>{bio}</Text>
 
             <View style={styles.followButtonStyle}>
               {followStatus === true ? (
@@ -218,7 +186,6 @@ const styles = StyleSheet.create({
   orderContainer: {
     flex: 1,
     flexDirection: 'row',
-    // alignItems: 'center',
   },
   rating: {
     fontSize: wp(3),
@@ -252,28 +219,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  textStyle: {
-    fontSize: wp(2.7),
-    color: '#fff',
-    // marginRight: wp(1),
-  },
-
-  pmTextStyle: {
-    fontSize: wp(3),
-    marginLeft: wp(1),
-  },
-
-  vectorIconRow: {
-    marginHorizontal: wp(0.8),
-  },
-
   nameText: {
     padding: wp(0.6),
     color: '#333',
     fontSize: wp(4),
     fontWeight: '700',
     flex: 1,
-    // textAlign: 'center',
   },
 
   followButton: {
@@ -298,23 +249,12 @@ const styles = StyleSheet.create({
     borderRadius: hp(7),
   },
   descText: {
-    fontSize: wp(4),
+    fontSize: wp(3.8),
     color: '#666',
     flex: 1,
+    marginLeft: wp(1),
   },
-  buttonRow: {
-    // position: 'absolute',
-    // alignItems: 'center',
-    // borderWidth: 2,
-    // right: 3,
-    // bottom: 18,
-  },
-  starCont: {
-    height: hp(5),
-    aspectRatio: 1 / 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+
   followButtonStyle: {
     // borderWidth: 1,
   },
