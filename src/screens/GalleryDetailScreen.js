@@ -67,6 +67,7 @@ class GalleryDetailScreen extends Component {
       likes: '',
       description: '',
       comments: '',
+      commentCount: 0,
       postTime: '',
       likedBy: '',
       likeStatus: false,
@@ -100,7 +101,7 @@ class GalleryDetailScreen extends Component {
     if (!userInfo) {
       Alert.alert(
         'Alert!',
-        'You Need To Login?',
+        'You Need to Login First.\nPress LOGIN to Continue!',
         [
           {text: 'Cancel', style: 'cancel'},
           {text: 'Login', onPress: this.onLoginPress},
@@ -143,8 +144,8 @@ class GalleryDetailScreen extends Component {
       const params = {
         postId,
       };
-
-      await this.props.postDetail('Customers/postDetail', params, true);
+      console.log(params);
+      await this.props.postDetail('Customers/postDetail', params, false);
 
       const {isPostDetail: response} = this.props;
 
@@ -178,7 +179,9 @@ class GalleryDetailScreen extends Component {
             likeStatus,
             likedBy,
             comments,
+            commentCount,
             shareCount,
+            postTime,
           } = posts;
 
           this.setState({
@@ -189,12 +192,14 @@ class GalleryDetailScreen extends Component {
             city,
             description,
             feedDate,
+            postTime,
             mediaType,
             mediaUrl,
             likes,
             likeStatus,
             likedBy,
             comments,
+            commentCount,
             contentLoading: false,
           });
         } else {
@@ -226,6 +231,23 @@ class GalleryDetailScreen extends Component {
 
   handleLikeUnlike = async () => {
     try {
+      const userInfo = await getData(KEYS.USER_INFO);
+      if (!userInfo) {
+        Alert.alert(
+          'Alert!',
+          'You Need to Login First.\nPress LOGIN to Continue!',
+          [
+            {text: 'NO', style: 'cancel'},
+            {text: 'LOGIN', onPress: this.onLoginPress},
+          ],
+          {
+            cancelable: false,
+          },
+        );
+
+        return;
+      }
+
       const {postId} = this.item;
       const {likeStatus} = this.state;
 
@@ -279,8 +301,6 @@ class GalleryDetailScreen extends Component {
 
   handleSharePost = async () => {
     try {
-      // starting loader
-      this.setState({isProcessing: true});
       const userInfo = await getData(KEYS.USER_INFO);
       if (!userInfo) {
         Alert.alert(
@@ -297,6 +317,8 @@ class GalleryDetailScreen extends Component {
 
         return;
       }
+      // starting loader
+      this.setState({isProcessing: true});
 
       const {postId} = this.item;
 
@@ -465,13 +487,14 @@ class GalleryDetailScreen extends Component {
       vendorImage,
       city,
       description,
-      feedDate: postTime,
+      postTime,
       mediaType,
       mediaUrl,
       likes,
       likeStatus,
       likedBy,
-      comments: commentCount,
+      comments,
+      commentCount,
       isLike,
     } = this.state;
 
@@ -499,7 +522,9 @@ class GalleryDetailScreen extends Component {
               style={styles.newsFeedsImage}
             />
             <View style={basicStyles.flexOne}>
-              <Text style={basicStyles.heading}>{vendorName}</Text>
+              <Text style={basicStyles.heading}>
+                {vendorName}, {city}
+              </Text>
               <Text style={[basicStyles.textSmall, basicStyles.grayColor]}>
                 {postTime}
               </Text>
@@ -586,38 +611,6 @@ class GalleryDetailScreen extends Component {
               </TouchableOpacity>
             )}
 
-            {/* {this.state.likeStatus ? (
-              <View
-                style={[
-                  basicStyles.directionRow,
-                  basicStyles.alignCenter,
-                  styles.likeBtnActive,
-                ]}>
-                <Image
-                  source={ic_like_fill}
-                  resizeMode="cover"
-                  style={basicStyles.iconRowSmallMargin}
-                />
-                <Text style={[basicStyles.text, styles.activeText]}>
-                  {likes}
-                </Text>
-              </View>
-            ) : (
-              <View
-                style={[
-                  basicStyles.directionRow,
-                  basicStyles.alignCenter,
-                  styles.likeBtnInActive,
-                ]}>
-                <Image
-                  source={ic_like_border}
-                  resizeMode="cover"
-                  style={basicStyles.iconRowSmallMargin}
-                />
-                <Text style={[basicStyles.text]}>{likes}</Text>
-              </View>
-            )} */}
-
             <TouchableOpacity
               onPress={this.handleCommentScreen}
               style={[
@@ -666,7 +659,7 @@ class GalleryDetailScreen extends Component {
               All Comments ({commentCount})
             </Text>
           </TouchableOpacity>
-          {/* 
+
           <FlatList
             data={comments}
             renderItem={this.renderItem}
@@ -674,7 +667,7 @@ class GalleryDetailScreen extends Component {
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={this.itemSeparator}
             contentContainerStyle={styles.listContainer}
-          /> */}
+          />
         </ScrollView>
         {this.state.isProcessing && <ProcessingLoader />}
       </SafeAreaView>

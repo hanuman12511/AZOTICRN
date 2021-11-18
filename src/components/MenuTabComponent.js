@@ -27,6 +27,7 @@ import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // Style
 import basicStyles from '../styles/BasicStyles';
+import {KEYS, getData} from 'state/utils/UserPreference';
 
 export default class LiveTabComponent extends Component {
   constructor(props) {
@@ -87,6 +88,23 @@ export default class LiveTabComponent extends Component {
   };
 
   handleAddToFav = async () => {
+    const userInfo = await getData(KEYS.USER_INFO);
+    console.log('userinfo', userInfo);
+    if (!userInfo) {
+      Alert.alert(
+        'Alert!',
+        'You Need to Login First.\nPress LOGIN to Continue!',
+        [
+          {text: 'NO', style: 'cancel'},
+          {text: 'LOGIN', onPress: this.onLoginPress},
+        ],
+        {
+          cancelable: false,
+        },
+      );
+
+      return;
+    }
     const {addFavStatus} = this.state;
     const {productId} = this.props.item;
     const {handleAddToFavs} = this.props;

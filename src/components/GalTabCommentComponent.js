@@ -19,7 +19,7 @@ export default class GalTabCommentComponent extends Component {
   }
 
   render() {
-    const {comment, date, userImage, userName} = this.props.item;
+    const {comment, date, userImage, userName, replyCount} = this.props.item;
     return (
       <View
         style={[
@@ -42,7 +42,19 @@ export default class GalTabCommentComponent extends Component {
               basicStyles.justifyBetween,
               basicStyles.marginTopHalf,
             ]}>
-            <Text style={basicStyles.text}></Text>
+            <View style={basicStyles.directionRow}>
+              <Text
+                style={[
+                  basicStyles.textSmall,
+                  basicStyles.textBold,
+                  basicStyles.graysColor2,
+                ]}>
+                Replied{' '}
+              </Text>
+              <Text style={[basicStyles.textSmall, basicStyles.graysColor2]}>
+                ({replyCount ? replyCount : 0})
+              </Text>
+            </View>
             <Text style={basicStyles.grayColor}>{date}</Text>
           </View>
         </View>

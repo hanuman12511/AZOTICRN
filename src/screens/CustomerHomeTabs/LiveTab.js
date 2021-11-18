@@ -211,10 +211,14 @@ class LiveTab extends Component {
       this.setState({contentLoading: true});
 
       const userInfo = await getData(KEYS.USER_INFO);
+      const deviceInfo = await getData(KEYS.DEVICE_UNIQUE_ID);
+
+      const {deviceId} = deviceInfo;
 
       // Preparing Params
       let params = {
         sortingValue: selectedSortValue,
+        deviceId,
       };
 
       if (userInfo) {
@@ -223,6 +227,7 @@ class LiveTab extends Component {
         params = {
           payloadId,
           sortingValue: selectedSortValue,
+          deviceId,
         };
       }
 

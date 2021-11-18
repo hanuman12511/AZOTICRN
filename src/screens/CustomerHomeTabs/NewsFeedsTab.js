@@ -765,7 +765,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     flexDirection: 'column',
-    alignItems: 'flex-end',
+    // alignItems: 'flex-end',
     justifyContent: 'center',
     padding: wp(3),
     marginTop: hp(15),
