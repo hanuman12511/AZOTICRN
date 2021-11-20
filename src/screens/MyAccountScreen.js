@@ -546,7 +546,7 @@ export default class MyAccountScreen extends Component {
                 {name}
               </Text>
 
-              {bio ? (
+              {bio && bio !== 'null' ? (
                 <Text
                   style={[
                     basicStyles.text,

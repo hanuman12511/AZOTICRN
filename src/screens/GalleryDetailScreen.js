@@ -144,7 +144,7 @@ class GalleryDetailScreen extends Component {
       const params = {
         postId,
       };
-      console.log(params);
+
       await this.props.postDetail('Customers/postDetail', params, false);
 
       const {isPostDetail: response} = this.props;
@@ -159,6 +159,7 @@ class GalleryDetailScreen extends Component {
 
         if (success) {
           const {posts} = response;
+          const userInfo = await getData(KEYS.USER_INFO);
           const {
             postId,
             vendorId,
@@ -196,7 +197,7 @@ class GalleryDetailScreen extends Component {
             mediaType,
             mediaUrl,
             likes,
-            likeStatus,
+            likeStatus: userInfo ? likeStatus : false,
             likedBy,
             comments,
             commentCount,
@@ -441,6 +442,27 @@ class GalleryDetailScreen extends Component {
     await this.handleLikeUnlike();
   };
 
+  handleLikeScreen = async () => {
+    const userInfo = await getData(KEYS.USER_INFO);
+
+    if (!userInfo) {
+      Alert.alert(
+        'Alert!',
+        'You Need To Login?',
+        [
+          {text: 'Cancel', style: 'cancel'},
+          {text: 'Login', onPress: this.onLoginPress},
+        ],
+        {
+          cancelable: false,
+        },
+      );
+      return;
+    }
+    const {postId} = this.item;
+    this.props.navigation.navigate('Likes', {postId});
+  };
+
   keyExtractor = (item, index) => index.toString();
 
   itemSeparator = () => <View style={styles.separator} />;
@@ -465,20 +487,6 @@ class GalleryDetailScreen extends Component {
         </SafeAreaView>
       );
     }
-
-    // const {
-    //   vendorName,
-    //   city,
-    //   vendorImage,
-    //   mediaUrl,
-    //   likes,
-    //   description,
-    //   commentCount,
-    //   comments,
-    //   postTime,
-    //   likedBy,
-    //   likeStatus,
-    // } = item;
 
     const {
       vendorName,
@@ -642,12 +650,14 @@ class GalleryDetailScreen extends Component {
             </TouchableOpacity>
           </View>
 
-          <Text style={[basicStyles.text, basicStyles.paddingHorizontal]}>
+          <TouchableOpacity
+            style={[basicStyles.directionRow, basicStyles.paddingHorizontal]}
+            onPress={this.handleLikeScreen}>
             <Text style={[basicStyles.text, basicStyles.textBold]}>
               {likedBy}
             </Text>
             <Text style={basicStyles.grayColor}> liked this post.</Text>
-          </Text>
+          </TouchableOpacity>
 
           <TouchableOpacity onPress={this.handleCommentScreen}>
             <Text

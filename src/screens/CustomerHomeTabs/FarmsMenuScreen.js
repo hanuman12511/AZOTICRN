@@ -205,7 +205,12 @@ class FarmsMenuScreen extends Component {
 
       const {vendorId} = await this.props;
 
-      let params = null;
+      let params = {
+        vendorId,
+        type: 'farm',
+        slotId: selectedSlots ? selectedSlots.Id : '',
+        slotDate: this.state.deliveryDate,
+      };
 
       if (userInfo) {
         const {payloadId} = userInfo;
