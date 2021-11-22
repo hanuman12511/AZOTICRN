@@ -49,7 +49,10 @@ export default class SelectAddressComponent extends Component {
 
   handleSelectAddress = () => {
     const {handleCheckout} = this.props;
-    const {addressId, nickName, name, address, landMark} = this.props.item;
+    console.log(this.props.item);
+
+    const {addressId, nickName, name, address, landMark, location} =
+      this.props.item;
 
     const addressInfo = {
       addressId,
@@ -57,6 +60,7 @@ export default class SelectAddressComponent extends Component {
       name,
       address,
       landMark,
+      location,
     };
 
     handleCheckout(addressInfo);

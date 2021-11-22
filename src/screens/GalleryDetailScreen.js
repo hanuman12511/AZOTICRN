@@ -137,13 +137,25 @@ class GalleryDetailScreen extends Component {
     try {
       const item = this.props.navigation.getParam('item', null);
 
-      const {postId} = item;
       // starting loader
       // this.setState({isProcessing: true});
 
-      const params = {
+      // Fetching UserInfo
+      const userInfo = await getData(KEYS.USER_INFO);
+
+      const {postId} = item;
+
+      let params = {
         postId,
       };
+      if (userInfo) {
+        const {payloadId} = userInfo;
+
+        params = {
+          payloadId,
+          postId,
+        };
+      }
 
       await this.props.postDetail('Customers/postDetail', params, false);
 
@@ -197,7 +209,7 @@ class GalleryDetailScreen extends Component {
             mediaType,
             mediaUrl,
             likes,
-            likeStatus: userInfo ? likeStatus : false,
+            likeStatus,
             likedBy,
             comments,
             commentCount,

@@ -67,6 +67,7 @@ class LiveTab extends Component {
       initial: 0,
 
       selectedSortValue: '',
+      sortIcon: ic_filter,
 
       showQualityPopup: false,
     };
@@ -102,8 +103,8 @@ class LiveTab extends Component {
     );
   };
 
-  handleSelectedSortValue = selectedSortValue => async () => {
-    await this.setState({selectedSortValue});
+  handleSelectedSortValue = (selectedSortValue, sortIcon) => async () => {
+    await this.setState({selectedSortValue, sortIcon});
     this.handleFilter();
     await this.fetchFoodProducts();
     await this.fetchAgroProducts();
@@ -430,7 +431,7 @@ class LiveTab extends Component {
       contentLoading,
 
       orderType,
-
+      sortIcon,
       showFilters,
     } = this.state;
 
@@ -472,7 +473,7 @@ class LiveTab extends Component {
                 style={styles.filterIcon}
                 underlayColor="#ccc">
                 <Image
-                  source={ic_filter}
+                  source={sortIcon}
                   resizeMode="cover"
                   style={styles.fIcon}
                 />
@@ -487,7 +488,20 @@ class LiveTab extends Component {
 
                 <TouchableOpacity
                   style={[basicStyles.directionRow, basicStyles.paddingBottom]}
-                  onPress={this.handleSelectedSortValue('priceHigh')}>
+                  onPress={this.handleSelectedSortValue('', ic_filter)}>
+                  <Image
+                    source={ic_filter}
+                    resizeMode="cover"
+                    style={styles.filterIcons}
+                  />
+                  <Text style={[basicStyles.flexOne, basicStyles.text]}>
+                    Default
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[basicStyles.directionRow, basicStyles.paddingBottom]}
+                  onPress={this.handleSelectedSortValue('priceHigh', sortLow)}>
                   <Image
                     source={sortLow}
                     resizeMode="cover"
@@ -500,7 +514,7 @@ class LiveTab extends Component {
 
                 <TouchableOpacity
                   style={[basicStyles.directionRow, basicStyles.paddingBottom]}
-                  onPress={this.handleSelectedSortValue('priceLow')}>
+                  onPress={this.handleSelectedSortValue('priceLow', sortHigh)}>
                   <Image
                     source={sortHigh}
                     resizeMode="cover"
@@ -513,7 +527,10 @@ class LiveTab extends Component {
 
                 <TouchableOpacity
                   style={[basicStyles.directionRow, basicStyles.paddingBottom]}
-                  onPress={this.handleSelectedSortValue('alphaIncreasing')}>
+                  onPress={this.handleSelectedSortValue(
+                    'alphaIncreasing',
+                    ic_alphabetical_order,
+                  )}>
                   <Image
                     source={ic_alphabetical_order}
                     resizeMode="cover"
@@ -526,7 +543,10 @@ class LiveTab extends Component {
 
                 <TouchableOpacity
                   style={[basicStyles.directionRow, basicStyles.paddingBottom]}
-                  onPress={this.handleSelectedSortValue('alphaDecreasing')}>
+                  onPress={this.handleSelectedSortValue(
+                    'alphaDecreasing',
+                    ic_alphabetical_order2,
+                  )}>
                   <Image
                     source={ic_alphabetical_order2}
                     resizeMode="cover"
@@ -539,7 +559,10 @@ class LiveTab extends Component {
 
                 <TouchableOpacity
                   style={[basicStyles.directionRow, basicStyles.paddingBottom]}
-                  onPress={this.handleSelectedSortValue('aboutEnd')}>
+                  onPress={this.handleSelectedSortValue(
+                    'aboutEnd',
+                    about_to_end,
+                  )}>
                   <Image
                     source={about_to_end}
                     resizeMode="cover"
@@ -677,8 +700,8 @@ const styles = StyleSheet.create({
 
   filterIcon: {
     backgroundColor: '#fff',
-    height: hp(5),
-    width: hp(5),
+    height: hp(4.8),
+    aspectRatio: 1 / 1,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 3,

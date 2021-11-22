@@ -151,9 +151,9 @@ class MenuScreen extends Component {
 
       let index = products.findIndex(x => x.productId === productId);
 
-      if (index >= 0) {
-        setTimeout(() => this.flatListRef.scrollToIndex({index}), 500);
-      }
+      // if (index >= 0) {
+      //   setTimeout(() => this.flatListRef.scrollToIndex({index}), 500);
+      // }
     }
   };
 

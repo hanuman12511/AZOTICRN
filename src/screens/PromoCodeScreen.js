@@ -197,7 +197,7 @@ export default class CouponScreen extends Component {
           <View style={styles.inputContainer}>
             <TextInput
               placeholder="Enter promo code here"
-              placeholderTextColor="#999"
+              placeholderTextColor="#777"
               style={styles.input}
               value={promoCode}
               onChangeText={this.handlePromoCodeChange}
@@ -242,8 +242,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#cccccc',
+    backgroundColor: '#ddd',
     borderRadius: wp(1),
+    marginBottom: wp(2),
   },
   input: {
     height: hp(6),

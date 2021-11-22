@@ -69,6 +69,7 @@ class CartScreen extends Component {
       cartList: null,
       isLoading: true,
       isProcessing: false,
+      isLoggedIn: false,
       couponCode: '',
       promoCodeId: '',
       selectedSlot: {
@@ -86,7 +87,16 @@ class CartScreen extends Component {
       this.backAction,
     );
     this.fetchCartList();
+    this.setUserInfo();
   }
+
+  setUserInfo = async () => {
+    const userInfo = await getData(KEYS.USER_INFO);
+
+    let isLoggedIn = userInfo ? true : false;
+
+    this.setState({isLoggedIn});
+  };
 
   backAction = () => {
     this.goBack();
@@ -519,6 +529,7 @@ class CartScreen extends Component {
       isProcessing,
       cartList,
       selectedSlot,
+      isLoggedIn,
     } = this.state;
 
     const labelStyle = {
@@ -572,68 +583,61 @@ class CartScreen extends Component {
               </View>
 
               {/* <View style={styles.more}>
-              <FlatList
-                data={this.state.listItems}
-                renderItem={this.MoreItems}
-                keyExtractor={this.keyExtractor}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                ItemSeparatorComponent={this.itemSeparator}
-                contentContainerStyle={styles.listContainer}
-              />
-            </View> */}
+                <FlatList
+                  data={this.state.listItems}
+                  renderItem={this.MoreItems}
+                  keyExtractor={this.keyExtractor}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  ItemSeparatorComponent={this.itemSeparator}
+                  contentContainerStyle={styles.listContainer}
+                />
+              </View> */}
             </ScrollView>
 
-            <Text
-              style={[
-                basicStyles.heading,
-                basicStyles.paddingHorizontal,
-                basicStyles.marginTop,
-              ]}>
-              Promocode
-            </Text>
-
-            <View style={styles.inputBox}>
-              <TextInput
-                placeholder="Enter Promo Code"
-                placeholderTextColor="#888"
-                style={styles.input}
-                value={this.state.couponCode}
-                onChangeText={this.handleCouponChange}
-              />
-
-              <TouchableOpacity
-                style={styles.applyBtn}
-                onPress={this.handleCouponApply}>
-                <Text style={[basicStyles.heading, basicStyles.orangeColor]}>
-                  Apply
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={[basicStyles.padding, {marginTop: hp(-2)}]}>
-              <Text style={[basicStyles.textSmall, {color: '#888'}]}>
-                Select Coupon{' '}
+            {isLoggedIn ? (
+              <View>
                 <Text
-                  style={[basicStyles.heading, {color: '#888'}]}
-                  onPress={this.handlePromoCode}>
-                  Here
+                  style={[
+                    basicStyles.heading,
+                    basicStyles.paddingHorizontal,
+                    basicStyles.marginTop,
+                  ]}>
+                  Promocode
                 </Text>
-              </Text>
-            </View>
+
+                <View style={styles.inputBox}>
+                  <TextInput
+                    placeholder="Enter Promo Code"
+                    placeholderTextColor="#888"
+                    style={styles.input}
+                    value={this.state.couponCode}
+                    onChangeText={this.handleCouponChange}
+                  />
+
+                  <TouchableOpacity
+                    style={styles.applyBtn}
+                    onPress={this.handleCouponApply}>
+                    <Text
+                      style={[basicStyles.heading, basicStyles.orangeColor]}>
+                      Apply
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={[basicStyles.padding, {marginTop: hp(-2)}]}>
+                  <Text style={[basicStyles.textSmall, {color: '#888'}]}>
+                    Select Coupon{' '}
+                    <Text
+                      style={[basicStyles.heading, {color: '#888'}]}
+                      onPress={this.handlePromoCode}>
+                      Here
+                    </Text>
+                  </Text>
+                </View>
+              </View>
+            ) : null}
 
             <View style={styles.cartTopDetail}>
-              {/* <View style={styles.row}>
-              <Text style={styles.rowColumn}>M.R.P.</Text>
-              <Text style={styles.rowColumn}>₹ {itemTotal}</Text>
-            </View> */}
-
-              {/* <View style={styles.row}>
-              <Text style={styles.rowColumn}>Delivery Charges</Text>
-              <Text style={styles.rowColumn}>₹ {deliveryCharges}</Text>
-            </View> */}
-              {/* <View style={styles.rowSeparator} /> */}
-
               <View style={styles.row}>
                 <Text style={basicStyles.text}>Sub Total</Text>
                 <Text style={basicStyles.text}>₹ {subTotal}</Text>
@@ -746,9 +750,10 @@ const styles = StyleSheet.create({
     height: hp(5),
     fontSize: wp(3.2),
     borderWidth: 1,
-    borderColor: '#ccc4',
+    borderColor: '#ccc9',
     flex: 1,
     marginRight: wp(3),
+    paddingLeft: wp(2),
   },
   applyBtn: {
     // backgroundColor: '#F57C00',

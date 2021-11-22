@@ -538,7 +538,7 @@ class CusVendorsPage extends Component {
       ratingCount,
       vendorAddress,
       followCount,
-      likesCount,
+      likes,
     } = this.item;
 
     return (
@@ -629,7 +629,7 @@ class CusVendorsPage extends Component {
 
                     <View style={styles.detailTile}>
                       <Text style={styles.tileTitle}>Likes</Text>
-                      <Text style={styles.tileData}>{likesCount}</Text>
+                      <Text style={styles.tileData}>{likes}</Text>
                     </View>
 
                     <View style={basicStyles.separatorVertical} />

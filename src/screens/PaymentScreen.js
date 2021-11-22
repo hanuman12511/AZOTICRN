@@ -45,6 +45,7 @@ export default class PaymentScreen extends Component {
     const info = props.navigation.getParam('info', null);
 
     const {total} = info;
+    // console.log("Informat",info);
     this.info = info;
     this.state = {
       total,
@@ -95,7 +96,9 @@ export default class PaymentScreen extends Component {
       if (!deviceInfo) {
         return;
       }
-      let {address, total, promoCode, selectedSlot} = this.info;
+      let {address, total, promoCode, selectedSlot, addressInfo} = this.info;
+
+      const {lat, long} = addressInfo.location;
 
       const {deviceId} = deviceInfo;
 
@@ -107,6 +110,8 @@ export default class PaymentScreen extends Component {
         slotId: selectedSlot.id,
         deliveryDate: selectedSlot.date,
         promoCode,
+        latitude: lat,
+        longitude: long,
       };
 
       // calling api
@@ -155,7 +160,7 @@ export default class PaymentScreen extends Component {
             this.props.navigation.navigate('ConfirmOrder', {response});
           }
         } else {
-          const {isAuthTokenExpired} = response;
+          const {isAuthTokenExpired, message} = response;
           if (isAuthTokenExpired === true) {
             Alert.alert(
               'Session Expired',
@@ -166,6 +171,13 @@ export default class PaymentScreen extends Component {
               },
             );
             return;
+          } else {
+            this.setState({
+              isProcessing: false,
+              isLoading: false,
+            });
+
+            Alert.alert('Order!', message);
           }
         }
       } else {

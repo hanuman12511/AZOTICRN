@@ -29,7 +29,12 @@ import {
 } from 'react-native-easy-content-loader';
 import {makeNetworkRequest} from 'state/utils/makeNetworkRequest';
 
-export default class extends Component {
+// Redux
+import {connect} from 'react-redux';
+import {loaderSelectors} from 'state/ducks/loader';
+import {homeSelectors, homeOperations} from 'state/ducks/home';
+
+class NotificationScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -46,7 +51,7 @@ export default class extends Component {
     );
 
     this.fetchNotification();
-    this.resetNotificationCount();
+    // this.resetNotificationCount();
   }
 
   componentWillUnmount() {
@@ -65,27 +70,22 @@ export default class extends Component {
       const userInfo = await getData(KEYS.USER_INFO);
 
       let params = null;
-      let response = null;
 
-      if (!userInfo) {
-        // calling api
-        response = await makeNetworkRequest(
-          'Notifications/notificationList',
-          params,
-        );
-      } else if (userInfo) {
+      if (userInfo) {
         const {payloadId} = userInfo;
 
         params = {
           payloadId,
         };
-
-        // calling api
-        response = await makeNetworkRequest(
-          'Notifications/notificationList',
-          params,
-        );
       }
+
+      await this.props.notificationList(
+        'Notifications/notificationList',
+        params,
+        true,
+      );
+
+      const {isNotificationList: response} = this.props;
 
       // Processing Response
       if (response) {
@@ -118,6 +118,7 @@ export default class extends Component {
             isLoading: false,
             isListRefreshing: false,
           });
+          await this.resetNotificationCount();
         }
         // }
       } else {
@@ -145,12 +146,14 @@ export default class extends Component {
         const params = {
           payloadId,
         };
-        // calling api
-        const response = await makeNetworkRequest(
+
+        await this.props.getNotificationCount(
           'Notifications/getNotificationCount',
           params,
           true,
         );
+
+        const {isGetNotificationCount: response} = this.props;
 
         // processing response
         if (response) {
@@ -158,7 +161,7 @@ export default class extends Component {
 
           if (success) {
             const {notificationCount} = response;
-            await storeData(KEYS.NOTIFICATION_COUNT, {notificationCount});
+            // await storeData(KEYS.NOTIFICATION_COUNT, {notificationCount});
             this.setState({
               notificationCount,
               isLoading: false,
@@ -185,11 +188,13 @@ export default class extends Component {
         };
 
         // calling api
-        const response = await makeNetworkRequest(
+        await this.props.resetNotificationCount(
           'Notifications/resetNotificationCount',
           params,
           true,
         );
+
+        const {isResetNotificationCount: response} = this.props;
 
         // processing response
         if (response) {
@@ -269,6 +274,21 @@ export default class extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  isProcessing: loaderSelectors.isProcessing(state),
+  isGetNotificationCount: homeSelectors.isGetNotificationCount(state),
+  isNotificationList: homeSelectors.isNotificationList(state),
+  isResetNotificationCount: homeSelectors.isResetNotificationCount(state),
+});
+
+const mapDispatchToProps = {
+  getNotificationCount: homeOperations.getNotificationCount,
+  notificationList: homeOperations.notificationList,
+  resetNotificationCount: homeOperations.resetNotificationCount,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NotificationScreen);
 
 const styles = StyleSheet.create({
   separator: {

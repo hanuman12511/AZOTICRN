@@ -38,18 +38,18 @@ class HeaderComponent extends PureComponent {
       notificationCount: 0,
     };
   }
-  // intervalID;
+  intervalID;
 
   componentDidMount() {
     this.fetchUser();
     // if (this.props.showCartIcon) {
     //   this.fetchCartItemCount();
     //   this.fetchNotificationCount();
-    //   this.intervalID = setTimeout(this.componentDidMount.bind(this), 3000);
+    this.intervalID = setTimeout(this.fetchUser.bind(this), 3000);
     // }
   }
   componentWillUnmount() {
-    // clearTimeout(this.intervalID);
+    clearTimeout(this.intervalID);
   }
 
   fetchUser = async () => {
@@ -59,19 +59,6 @@ class HeaderComponent extends PureComponent {
       const {image} = userInfo;
 
       this.setState({userLogin: true, userImage: image});
-    }
-  };
-
-  fetchCartItemCount = async () => {
-    try {
-      const cartCount = await getData(KEYS.CART_ITEM_COUNT);
-
-      if (cartCount) {
-        const {cartItemCount} = cartCount;
-        this.setState({cartItemCount});
-      }
-    } catch (error) {
-      console.log(error.message);
     }
   };
 
@@ -124,6 +111,7 @@ class HeaderComponent extends PureComponent {
   };
 
   render() {
+    const {userLogin} = this.state;
     const {
       headerTitle,
       navAction,
@@ -132,6 +120,7 @@ class HeaderComponent extends PureComponent {
       showAccountIcon,
       showNotification,
       cartItemCount,
+      notificationCount,
     } = this.props;
 
     let handleNavAction;
@@ -144,7 +133,7 @@ class HeaderComponent extends PureComponent {
     // const showNotificationBadge = notificationCount > 0;
     // const isNotificationCountUpToTwoDigit = notificationCount < 100;
 
-    const {userImage, notificationCount} = this.state;
+    const {userImage} = this.state;
     const showCartBadge = cartItemCount > 0;
     const isCartCountTwoDigit = cartItemCount < 100;
 
@@ -187,7 +176,7 @@ class HeaderComponent extends PureComponent {
                 </View>
               </TouchableOpacity>
             )}
-            {showNotification && (
+            {userLogin && showNotification && (
               <TouchableOpacity
                 underlayColor="transparent"
                 style={basicStyles.marginLeft}

@@ -178,7 +178,7 @@ class HomeScreen extends Component {
 
           if (success) {
             const {notificationCount} = response;
-
+            console.log('Notification Count', notificationCount);
             this.setState({
               notificationCount,
               isLoading: false,
@@ -635,7 +635,13 @@ class HomeScreen extends Component {
   };
 
   render() {
-    const {liveStories, tabActive, currentLocation, isProcessing} = this.state;
+    const {
+      liveStories,
+      tabActive,
+      currentLocation,
+      isProcessing,
+      notificationCount,
+    } = this.state;
 
     const activeStyle = [styles.tabBarIndicator, {backgroundColor: '#f57c00'}];
     const tabActiveText = [styles.tabBarLabel, {color: '#333'}];
@@ -649,6 +655,7 @@ class HomeScreen extends Component {
             showCartIcon
             showAccountIcon
             showNotification
+            notificationCount={notificationCount}
           />
 
           <TouchableOpacity

@@ -233,6 +233,7 @@ export default class NewsFeedComponent extends Component {
       shareCount,
       likedBy,
       likeStatus,
+      likesCount,
     } = this.props.item;
 
     const {isLike, isLoggedIn} = this.state;
@@ -339,7 +340,7 @@ export default class NewsFeedComponent extends Component {
                   style={styles.likeIcon}
                 />
                 <Text style={[basicStyles.text, styles.activeText]}>
-                  {likes}
+                  {likesCount}
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -351,7 +352,7 @@ export default class NewsFeedComponent extends Component {
                   resizeMode="cover"
                   style={styles.likeIcon}
                 />
-                <Text style={[basicStyles.text]}>{likes}</Text>
+                <Text style={[basicStyles.text]}>{likesCount}</Text>
               </TouchableOpacity>
             )}
 
