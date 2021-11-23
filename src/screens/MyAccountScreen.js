@@ -121,10 +121,6 @@ export default class MyAccountScreen extends Component {
 
       // const userInfo = await getData(KEYS.USER_INFO);
 
-      // if (userInfo) {
-      //   const params = {
-      //     userId,
-      //   };
       let params = null;
       // calling api
       const response = await makeNetworkRequest(
@@ -149,6 +145,10 @@ export default class MyAccountScreen extends Component {
 
           const {userName, bio, image, name} = userInfos;
 
+          let userInfo = await getData(KEYS.USER_INFO);
+
+          userInfo.image = image;
+          await storeData(KEYS.USER_INFO, userInfo);
           this.setState({
             userInfo: userInfos,
             userImage: image,
@@ -158,10 +158,6 @@ export default class MyAccountScreen extends Component {
             bio,
             name,
           });
-          let userInfo = await getData(KEYS.USER_INFO);
-
-          userInfo.image = image;
-          await storeData(KEYS.USER_INFO, userInfo);
         }
       } else {
         this.setState({
@@ -194,9 +190,6 @@ export default class MyAccountScreen extends Component {
     this.props.navigation.navigate('Login');
   };
 
-  // handleProfile = () => {
-  //   this.props.navigation.navigate('MyProfile');
-  // };
   handleOrderHistory = () => {
     this.props.navigation.navigate('Orders');
   };
@@ -249,7 +242,6 @@ export default class MyAccountScreen extends Component {
   };
 
   handleMoreInfo = () => {
-    // this.setState({editProfilePopup: true});
     this.RBSheet.open();
   };
 
@@ -260,10 +252,6 @@ export default class MyAccountScreen extends Component {
   closePopup = () => {
     this.setState({editProfilePopup: false});
   };
-
-  // closePopup = () => {
-  //   this.setState({changePasswordPopup: false});
-  // };
 
   handlePermission = async () => {
     try {
@@ -433,8 +421,8 @@ export default class MyAccountScreen extends Component {
           // refreshing list
 
           showToast(message);
-          this.closePopup();
           await this.fetchUserProfile();
+          this.closePopup();
         } else {
           const {isAuthTokenExpired} = response;
           if (isAuthTokenExpired === true) {
