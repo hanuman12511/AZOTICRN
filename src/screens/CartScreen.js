@@ -136,6 +136,8 @@ class CartScreen extends Component {
       if (response) {
         const {success, message} = response;
 
+        console.log('cart=======', response);
+
         if (success) {
           const {
             itemTotal,

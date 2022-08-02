@@ -10,7 +10,7 @@ import {KEYS, getData} from './UserPreference';
 // Base URL
 // export const BASE_URL = 'https://templatelaboratory.com/api/'; /* Local URL */
 // export const BASE_URL = 'https://www.agzotic.com/api/'; //     /* Live URL */
-export const BASE_URL = 'https://app.agzotic.com/api/'; //     /* Live URL */
+export const BASE_URL = 'https://idsfood.shoponcell.com/api/'; //     /* Live URL */
 
 const AXIOS = axios.create({
   baseURL: BASE_URL,
@@ -31,6 +31,9 @@ export const makeNetworkRequest = async (
     // request info
     let info = {};
     info.url = url;
+
+    console.log('api params=', params);
+
     if (params) {
       // request method
       info.method = 'POST';
@@ -104,9 +107,11 @@ export const makeNetworkRequest = async (
       }
     }
 
+    console.log('api info=', info);
+    console.log('Request URLll:', BASE_URL + url);
+
     const response = await AXIOS.request(info);
-    // console.log('Request Result:', response);
-    // console.log('Request URLll:', BASE_URL + url);
+    console.log('Request Result:', response);
     // console.log('Request Info:', info);
 
     const result = response.data;

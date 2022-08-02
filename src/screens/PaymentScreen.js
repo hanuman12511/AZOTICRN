@@ -98,6 +98,8 @@ export default class PaymentScreen extends Component {
       }
       let {address, total, promoCode, selectedSlot, addressInfo} = this.info;
 
+      console.log('slot======', this.info);
+
       const {lat, long} = addressInfo.location;
 
       const {deviceId} = deviceInfo;
@@ -108,12 +110,13 @@ export default class PaymentScreen extends Component {
         address,
         remainingPayableAmount: total,
         slotId: selectedSlot.id,
-        deliveryDate: selectedSlot.date,
+        deliveryDate: selectedSlot.slot,
         promoCode,
         latitude: lat,
         longitude: long,
       };
 
+      console.log('slotparams', params);
       // calling api
       const response = await makeNetworkRequest(
         'Customers/placeOrder',

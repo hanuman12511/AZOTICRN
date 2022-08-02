@@ -8,7 +8,8 @@ import {KEYS, getData} from './UserPreference';
 // export const BASE_URL = 'https://www.agzotic.com/api/'; //     /* Live URL */
 //export const BASE_URL = 'https://app.agzotic.com/api/'; //     /* Live URL */
 
-export const BASE_URL = 'https://agzotic.hassanmirzagroup.com/';
+//export const BASE_URL = 'https://agzotic.hassanmirzagroup.com/';
+export const BASE_URL = 'https://idsfood.shoponcell.com/api/';
 // Methods
 export const makeRequest = async (
   url,
@@ -96,7 +97,7 @@ export const makeRequest = async (
     console.log('Request Info:', info);
 
     const response = await fetch(url, info);
-    // console.log('Request Response:', response);
+    console.log('Request Response:', response);
 
     const result = await response.json();
     console.log('Request Result:', result);

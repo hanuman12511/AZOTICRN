@@ -12,7 +12,7 @@ import ic_header_bell from '../assets/icons/ic_header_bell.png';
 import ic_header_account from '../assets/icons/ic_header_account.png';
 
 // Images
-import logo_black from '../assets/images/logo_black.png';
+import logo_black from '../assets/images/Logo.png';
 
 // Styles
 import basicStyles from '../styles/BasicStyles';
@@ -335,8 +335,8 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
   HeaderLogo: {
-    height: hp(3.5),
-    aspectRatio: 4.48 / 1,
+    height: hp(13),
+    aspectRatio: 1 / 1,
   },
   headerTopContainer: {
     flexDirection: 'row',
