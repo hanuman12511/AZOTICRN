@@ -658,7 +658,7 @@ class HomeScreen extends Component {
             notificationCount={notificationCount}
           />
 
-          <TouchableOpacity
+          {/*   <TouchableOpacity
             onPress={this.handleCurrentLoc}
             style={[
               basicStyles.directionRow,
@@ -670,15 +670,10 @@ class HomeScreen extends Component {
               style={styles.mapIcon}
             />
             <View style={styles.dashed}>
-              <Text
-                style={styles.addressText}
-                // numberOfLines={numLines}
-                // ellipsizeMode="tail"
-              >
+              <Text style={styles.addressText}>
                 {currentLocation.length < 35
                   ? `${currentLocation}`
                   : `${currentLocation.substring(0, 40)}...`}
-                {/* {currentLocation} */}
               </Text>
             </View>
           </TouchableOpacity>
@@ -690,7 +685,7 @@ class HomeScreen extends Component {
               handleReportStory={this.handleReportStory}
               handleStoryReaction={this.handleStoryReaction}
             />
-          ) : null}
+          ) : null} */}
 
           <View style={styles.tabContainer}>
             <TouchableOpacity onPress={this.handleFeed} style={styles.tabStyle}>

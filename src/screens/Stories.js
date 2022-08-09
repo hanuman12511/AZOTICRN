@@ -20,13 +20,13 @@ import {CubeNavigationHorizontal} from 'react-native-3dcube-navigation';
 // import liveStories from '../constants/liveStories';
 import StoryContainer from '../components/StoriesComponents/StoryContainer';
 
-const Stories = (props) => {
+const Stories = props => {
   const [isModelOpen, setModel] = useState(false);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
   const [currentScrollValue, setCurrentScrollValue] = useState(0);
   const modalScroll = useRef(null);
 
-  const onStorySelect = (index) => {
+  const onStorySelect = index => {
     setCurrentUserIndex(index);
     setModel(true);
   };
@@ -35,7 +35,7 @@ const Stories = (props) => {
     setModel(false);
   };
 
-  const onStoryNext = (isScroll) => {
+  const onStoryNext = isScroll => {
     const newIndex = currentUserIndex + 1;
     if (liveStories.length - 1 > currentUserIndex) {
       setCurrentUserIndex(newIndex);
@@ -47,7 +47,7 @@ const Stories = (props) => {
     }
   };
 
-  const onStoryPrevious = (isScroll) => {
+  const onStoryPrevious = isScroll => {
     const newIndex = currentUserIndex - 1;
     if (currentUserIndex > 0) {
       setCurrentUserIndex(newIndex);
@@ -57,7 +57,7 @@ const Stories = (props) => {
     }
   };
 
-  const onScrollChange = (scrollValue) => {
+  const onScrollChange = scrollValue => {
     if (currentScrollValue > scrollValue) {
       onStoryNext(true);
 
@@ -145,7 +145,7 @@ const Stories = (props) => {
         }}
         onRequestClose={onStoryClose}>
         {/* eslint-disable-next-line max-len */}
-        <CubeNavigationHorizontal
+        {/*   <CubeNavigationHorizontal
           callBackAfterSwipe={(g) => onScrollChange(g)}
           ref={modalScroll}
           style={styles.container}>
@@ -162,7 +162,7 @@ const Stories = (props) => {
               replyToStory={replyToStory}
             />
           ))}
-        </CubeNavigationHorizontal>
+        </CubeNavigationHorizontal> */}
       </Modal>
     </View>
   );

@@ -110,7 +110,7 @@ export default class PaymentScreen extends Component {
         address,
         remainingPayableAmount: total,
         slotId: selectedSlot.id,
-        deliveryDate: selectedSlot.slot,
+        deliveryDate: selectedSlot.date,
         promoCode,
         latitude: lat,
         longitude: long,
