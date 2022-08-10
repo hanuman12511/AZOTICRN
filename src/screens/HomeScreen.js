@@ -658,7 +658,7 @@ class HomeScreen extends Component {
             notificationCount={notificationCount}
           />
 
-          {/*   <TouchableOpacity
+          <TouchableOpacity
             onPress={this.handleCurrentLoc}
             style={[
               basicStyles.directionRow,
@@ -685,7 +685,7 @@ class HomeScreen extends Component {
               handleReportStory={this.handleReportStory}
               handleStoryReaction={this.handleStoryReaction}
             />
-          ) : null} */}
+          ) : null}
 
           <View style={styles.tabContainer}>
             <TouchableOpacity onPress={this.handleFeed} style={styles.tabStyle}>

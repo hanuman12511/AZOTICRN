@@ -119,7 +119,7 @@ const Stories = props => {
         )}
       />
 
-      {/* <FlatList
+      {/*   <FlatList
         data={liveStories}
         ItemSeparatorComponent={renderSeperator}
         style={{paddingHorizontal: 10}}
@@ -131,8 +131,8 @@ const Stories = props => {
             <Text style={styles.title}>{item.title}</Text>
           </TouchableOpacity>
         )}
-      /> */}
-
+      />
+ */}
       <Modal
         animationType="slide"
         transparent={false}
@@ -145,8 +145,8 @@ const Stories = props => {
         }}
         onRequestClose={onStoryClose}>
         {/* eslint-disable-next-line max-len */}
-        {/*   <CubeNavigationHorizontal
-          callBackAfterSwipe={(g) => onScrollChange(g)}
+        <CubeNavigationHorizontal
+          callBackAfterSwipe={g => onScrollChange(g)}
           ref={modalScroll}
           style={styles.container}>
           {liveStories.map((item, index) => (
@@ -162,7 +162,7 @@ const Stories = props => {
               replyToStory={replyToStory}
             />
           ))}
-        </CubeNavigationHorizontal> */}
+        </CubeNavigationHorizontal>
       </Modal>
     </View>
   );

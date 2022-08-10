@@ -196,6 +196,9 @@ export default class CartOptionsPopUp extends Component {
     const {customId, isCustom, selectedTimeSlotId, selectedSlot, slotsInfo} =
       this.state;
 
+    console.log('====================================');
+    console.log(this.state);
+    console.log('====================================');
     // validations
     // if (isCustom === true) {
     //   if (!customId) {

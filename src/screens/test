@@ -255,7 +255,7 @@ class FarmsMenuScreen extends Component {
           const slotsData = slots.map(item => ({
             Id: item.id,
             Name: item.slot,
-            Value: item.date,
+            Value: item.slot,
           }));
           console.log('====================================');
           console.log('selectedSlot=', selectedSlot);
@@ -268,7 +268,7 @@ class FarmsMenuScreen extends Component {
             newSlot = {
               Id: selectedSlot.id,
               Name: selectedSlot.slot,
-              Value: selectedSlot.date,
+              Value: selectedSlot.slot,
             };
           }
 
@@ -924,7 +924,7 @@ class FarmsMenuScreen extends Component {
       console.log('====================================');
       console.log('valu=e=', Value);
       console.log('====================================');
-      await this.setState({selectedSlots, deliveryDate: Value});
+      this.setState({selectedSlots, deliveryDate: Value});
       await this.fetchVendorMenu(selectedSlots);
     }
 

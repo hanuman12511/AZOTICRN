@@ -490,6 +490,9 @@ class MenuScreen extends Component {
         images: cameraImages,
       };
 
+      console.log('====================================');
+      console.log('addtocart params', params);
+      console.log('====================================');
       // calling api
       await this.props.addToCart('Customers/addToCart', params);
 
