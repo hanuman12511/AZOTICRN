@@ -86,7 +86,9 @@ class NotificationScreen extends Component {
       );
 
       const {isNotificationList: response} = this.props;
-
+      console.log('====================================');
+      console.log('notificationList', response);
+      console.log('====================================');
       // Processing Response
       if (response) {
         // this.setState({
@@ -155,6 +157,10 @@ class NotificationScreen extends Component {
 
         const {isGetNotificationCount: response} = this.props;
 
+        console.log('====================================');
+        console.log('getNotificationCount', response);
+        console.log('====================================');
+
         // processing response
         if (response) {
           const {success} = response;
@@ -196,6 +202,9 @@ class NotificationScreen extends Component {
 
         const {isResetNotificationCount: response} = this.props;
 
+        console.log('====================================');
+        console.log(response);
+        console.log('====================================');
         // processing response
         if (response) {
           this.setState({

@@ -224,6 +224,12 @@ class CartScreen extends Component {
       };
 
       // calling api
+      console.log('====================================');
+      console.log('This.props=');
+      console.log('====================================');
+      console.log('====================================');
+      console.log(this.props);
+      console.log('====================================');
       await this.props.getCartCount('Customers/cartCount', params);
       const {isGetCartCount: response} = this.props;
 
@@ -428,6 +434,7 @@ class CartScreen extends Component {
           promoCodeId,
           promoCode,
           selectedSlot,
+          cartList,
         },
       });
     }

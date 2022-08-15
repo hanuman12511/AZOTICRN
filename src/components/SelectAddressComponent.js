@@ -79,6 +79,9 @@ export default class SelectAddressComponent extends Component {
 
   render() {
     const {nickName, name, address} = this.props.item;
+    console.log('====================================');
+    console.log(this.props.item);
+    console.log('====================================');
     return (
       <TouchableOpacity
         style={[styles.listContainer]}

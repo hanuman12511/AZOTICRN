@@ -84,6 +84,10 @@ export default class OrderCancelledTabComponent extends Component {
       cancelledBy,
     } = this.props.item;
 
+    console.log('====================================');
+    console.log(this.props.item);
+    console.log('====================================');
+
     const orderContainer = {
       // marginVertical: hp(0.5),
       padding: wp(3),

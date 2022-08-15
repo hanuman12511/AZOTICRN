@@ -96,13 +96,17 @@ export default class PaymentScreen extends Component {
       if (!deviceInfo) {
         return;
       }
-      let {address, total, promoCode, selectedSlot, addressInfo} = this.info;
+      let {address, total, promoCode, selectedSlot, addressInfo, cartList} =
+        this.info;
 
       console.log('slot======', this.info);
 
       const {lat, long} = addressInfo.location;
 
       const {deviceId} = deviceInfo;
+      console.log('====================================');
+      console.log(cartList[0].deliveryDate);
+      console.log('====================================');
 
       const params = {
         deviceId,
@@ -110,10 +114,11 @@ export default class PaymentScreen extends Component {
         address,
         remainingPayableAmount: total,
         slotId: selectedSlot.id,
-        deliveryDate: selectedSlot.date,
+        deliveryDate: cartList[0].deliveryDate,
         promoCode,
         latitude: lat,
         longitude: long,
+        //cartList,
       };
 
       console.log('slotparams', params);

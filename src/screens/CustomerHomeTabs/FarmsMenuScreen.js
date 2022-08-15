@@ -257,12 +257,7 @@ class FarmsMenuScreen extends Component {
             Name: item.slot,
             Value: item.date,
           }));
-          console.log('====================================');
-          console.log('selectedSlot=', selectedSlot);
-          console.log('====================================');
-          console.log('====================================');
-          console.log('new slot=', this.state.selectedSlots);
-          console.log('====================================');
+
           let newSlot = this.state.selectedSlots;
           if (selectedSlot) {
             newSlot = {
@@ -276,8 +271,10 @@ class FarmsMenuScreen extends Component {
             slotsData,
             products,
             selectedSlots: newSlot,
+            deliveryDate: newSlot.Value,
             status: null,
           });
+          await this.proIdUpdate();
         } else {
           const {message, slots, selectedSlot} = response;
 
