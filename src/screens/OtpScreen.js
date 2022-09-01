@@ -140,6 +140,7 @@ export default class StartScreen extends Component {
           isProcessing: false,
         });
         const {success, message, userInfo, isProfileUpdate, address} = response;
+        
 
         if (success) {
           if (isProfileUpdate === false) {

@@ -79,6 +79,10 @@ class CartScreen extends Component {
         slot: '',
       },
     };
+
+    console.log('====================================');
+    console.log(this.props);
+    console.log('====================================');
   }
 
   componentDidMount() {
@@ -224,12 +228,7 @@ class CartScreen extends Component {
       };
 
       // calling api
-      console.log('====================================');
-      console.log('This.props=');
-      console.log('====================================');
-      console.log('====================================');
-      console.log(this.props);
-      console.log('====================================');
+
       await this.props.getCartCount('Customers/cartCount', params);
       const {isGetCartCount: response} = this.props;
 

@@ -119,6 +119,10 @@ class MenuScreen extends Component {
     this.parentView = null;
     this.addonDetails = new Set();
     this.flatListRef = null;
+
+    console.log('====================================');
+    console.log('menuscreen=', this.props);
+    console.log('====================================');
   }
 
   componentDidMount() {
@@ -437,8 +441,14 @@ class MenuScreen extends Component {
       console.log(error.message);
     }
   };
-
+  onLoginPress = () => {
+    this.props.navigation.push('Login');
+  };
   handleAddToCart = async () => {
+    console.log('====================================');
+    console.log('user Addtocart');
+    console.log('====================================');
+
     let {
       customId,
       isCustom,
@@ -474,76 +484,95 @@ class MenuScreen extends Component {
       const {deviceId} = deviceInfo;
       const {productId, quantity} = this.state;
       const {note} = this.state;
+      const userInfo = await getData(KEYS.USER_INFO);
 
-      let params = {
-        deviceId,
-        productId,
-        quantity,
-        customId,
-        addonId:
-          Object.keys(addonDetails).length > 0
-            ? JSON.stringify(addonDetails)
-            : 0,
-        note,
-        deliverySlot: selectedSlots.Id,
-        deliveryDate,
-        images: cameraImages,
-      };
+      if (userInfo) {
+        const {payloadId} = userInfo;
 
-      console.log('====================================');
-      console.log('addtocart params', params);
-      console.log('====================================');
-      // calling api
-      await this.props.addToCart('Customers/addToCart', params);
+        let params = {
+          userId: payloadId,
+          deviceId,
+          productId,
+          quantity,
+          customId,
+          addonId:
+            Object.keys(addonDetails).length > 0
+              ? JSON.stringify(addonDetails)
+              : 0,
+          note,
+          deliverySlot: selectedSlots.Id,
+          deliveryDate,
+          images: cameraImages,
+        };
 
-      const {isAddToCart: response} = this.props;
+        console.log('====================================');
+        console.log('addtocart params', params);
+        console.log('====================================');
+        // calling api
+        await this.props.addToCart('Customers/addToCart', params);
 
-      // Processing Response
-      if (response) {
-        const {success, message} = response;
+        const {isAddToCart: response} = this.props;
 
-        this.setState({
-          isProcessing: false,
-        });
+        // Processing Response
+        if (response) {
+          const {success, message} = response;
 
-        if (success) {
-          this.RBSheet.close();
-          this.closePopup();
+          this.setState({
+            isProcessing: false,
+          });
 
-          await this.fetchCartCount();
+          if (success) {
+            this.RBSheet.close();
+            this.closePopup();
 
-          showToast(message);
-        } else {
-          const {deleteCart} = response;
+            await this.fetchCartCount();
 
-          if (deleteCart) {
-            // Alert.alert('Alert', message);
-            Alert.alert(
-              'Alert!',
-              message,
-              [
-                {
-                  text: 'Cancel',
-                  onPress: this.stopIt,
-                },
-                {text: 'Remove', onPress: this.removeExistingItem},
-              ],
-              {
-                cancelable: false,
-              },
-            );
-
-            return;
-          } else {
             showToast(message);
+          } else {
+            const {deleteCart} = response;
+
+            if (deleteCart) {
+              // Alert.alert('Alert', message);
+              Alert.alert(
+                'Alert!',
+                message,
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: this.stopIt,
+                  },
+                  {text: 'Remove', onPress: this.removeExistingItem},
+                ],
+                {
+                  cancelable: false,
+                },
+              );
+
+              return;
+            } else {
+              showToast(message);
+            }
           }
+        } else {
+          this.setState({
+            isProcessing: false,
+            isLoading: false,
+          });
+          showToast('Network Request Error...');
         }
       } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
-        });
-        showToast('Network Request Error...');
+        Alert.alert(
+          'Alert!',
+          'You Need To Login?',
+          [
+            {text: 'Cancel', style: 'cancel'},
+            {text: 'Login', onPress: this.onLoginPress},
+          ],
+          {
+            cancelable: false,
+          },
+        );
+        return;
       }
     } catch (error) {
       console.log(error.message);

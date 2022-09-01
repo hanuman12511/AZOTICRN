@@ -453,6 +453,9 @@ class FarmsMenuScreen extends Component {
       console.log(error.message);
     }
   };
+  onLoginPress = () => {
+    this.props.navigation.push('Login');
+  };
 
   handleAddToCart = async () => {
     let {
@@ -494,75 +497,94 @@ class FarmsMenuScreen extends Component {
       const {deviceId} = deviceInfo;
       const {productId, quantity} = this.state;
       const {note} = this.state;
+      const userInfo = await getData(KEYS.USER_INFO);
 
-      let params = {
-        deviceId,
-        productId,
-        quantity,
-        customId,
-        addonId:
-          Object.keys(addonDetails).length > 0
-            ? JSON.stringify(addonDetails)
-            : 0,
-        note,
-        deliverySlot: selectedSlots.Id,
-        deliveryDate,
-        images: cameraImages,
-      };
+      if (userInfo) {
+        const {payloadId} = userInfo;
 
-      console.log('====================================');
-      console.log('addtoparams=', params);
-      console.log('====================================');
-      // calling api
-      await this.props.addToCart('Customers/addToCart', params);
+        let params = {
+          userId: payloadId,
+          deviceId,
+          productId,
+          quantity,
+          customId,
+          addonId:
+            Object.keys(addonDetails).length > 0
+              ? JSON.stringify(addonDetails)
+              : 0,
+          note,
+          deliverySlot: selectedSlots.Id,
+          deliveryDate,
+          images: cameraImages,
+        };
 
-      const {isAddToCart: response} = this.props;
+        console.log('====================================');
+        console.log('addtoparams=', params);
+        console.log('====================================');
+        // calling api
+        await this.props.addToCart('Customers/addToCart', params);
 
-      // Processing Response
-      if (response) {
-        const {success, message} = response;
+        const {isAddToCart: response} = this.props;
 
-        if (success) {
-          this.RBSheet.close();
-          this.closePopup();
+        // Processing Response
+        if (response) {
+          const {success, message} = response;
 
-          await this.fetchCartCount();
+          if (success) {
+            this.RBSheet.close();
+            this.closePopup();
 
+            await this.fetchCartCount();
+
+            this.setState({
+              isProcessing: false,
+            });
+            showToast(message);
+          } else {
+            const {deleteCart} = response;
+
+            if (deleteCart) {
+              // Alert.alert('Alert', message);
+              Alert.alert(
+                'Alert!',
+                message,
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: this.stopIt,
+                  },
+                  {text: 'Remove', onPress: this.removeExistingItem},
+                ],
+                {
+                  cancelable: false,
+                },
+              );
+
+              return;
+            } else {
+              showToast(message);
+            }
+          }
+        } else {
           this.setState({
             isProcessing: false,
+            isLoading: false,
           });
-          showToast(message);
-        } else {
-          const {deleteCart} = response;
-
-          if (deleteCart) {
-            // Alert.alert('Alert', message);
-            Alert.alert(
-              'Alert!',
-              message,
-              [
-                {
-                  text: 'Cancel',
-                  onPress: this.stopIt,
-                },
-                {text: 'Remove', onPress: this.removeExistingItem},
-              ],
-              {
-                cancelable: false,
-              },
-            );
-
-            return;
-          } else {
-            showToast(message);
-          }
+          showToast('Network Request Error...');
         }
       } else {
-        this.setState({
-          isProcessing: false,
-          isLoading: false,
-        });
-        showToast('Network Request Error...');
+        Alert.alert(
+          'Alert!',
+          'You Need To Login?',
+          [
+            {text: 'Cancel', style: 'cancel'},
+            {text: 'Login', onPress: this.onLoginPress},
+          ],
+          {
+            cancelable: false,
+          },
+        );
+        return;
       }
     } catch (error) {
       console.log(error.message);
